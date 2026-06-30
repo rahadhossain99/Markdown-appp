@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="bn" class="theme-light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CleanMark - Ultimate Markdown Workspace</title>
+    <!-- Tailwind CSS for modern and responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for ultimate readability (Bengali & English Custom Fonts) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,700;1,400&family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Serif+Bengali:wght@300;400;700&family=Mina:wght@400;700&family=Atma:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons for premium high-quality SVGs -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- MarkedJS for markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- DOMPurify to prevent XSS -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Hind Siliguri', 'sans-serif'],
+                        serif: ['Lora', 'Noto Serif Bengali', 'serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* CSS Theme Variables to fully fix layout breaking bugs */
+        :root {
+            --bg-app: #f8fafc;
+            --bg-card: #ffffff;
+            --border-color: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --bg-input: #ffffff;
+            --accent: #4f46e5;
+            --bg-blockquote: #f1f5f9;
+            --hover-item: #f1f5f9;
+        }
+        .dark {
+            --bg-app: #0f172a;
+            --bg-card: #1e293b;
+            --border-color: #334155;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --bg-input: #1e293b;
+            --accent: #38bdf8;
+            --bg-blockquote: #334155;
+            --hover-item: #334155;
+        }
+        .theme-sepia {
+            --bg-app: #fbf6e3;
+            --bg-card: #f4eccf;
+            --border-color: #e7dbb2;
+            --text-main: #433422;
+            --text-muted: #8c765c;
+            --bg-input: #fbf6e3;
+            --accent: #b45309;
+            --bg-blockquote: #efe6c4;
+            --hover-item: #efe6c4;
+        }
+        .theme-slate {
+            --bg-app: #0b0f19;
+            --bg-card: #111827;
+            --border-color: #1f2937;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --bg-input: #111827;
+            --accent: #6366f1;
+            --bg-blockquote: #1f2937;
+            --hover-item: #1f2937;
+        }
+        /* Bind CSS Variables to custom Tailwind helper utilities */
+        .app-bg { background-color: var(--bg-app) !important; transition: background-color 0.2s ease; }
+        .card-bg { background-color: var(--bg-card) !important; transition: background-color 0.2s ease; }
+        .border-theme { border-color: var(--border-color) !important; transition: border-color 0.2s ease; }
+        .text-main { color: var(--text-main) !important; transition: color 0.2s ease; }
+        .text-muted { color: var(--text-muted) !important; transition: color 0.2s ease; }
+        .input-bg { background-color: var(--bg-input) !important; color: var(--text-main) !important; transition: all 0.2s ease; }
+        .hover-theme:hover { background-color: var(--hover-item) !important; }
+        /* Smooth custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 9999px;
+        }
+        /* Typography sizing overrides */
+        .markdown-body {
+            line-height: 1.8;
+            letter-spacing: -0.009em;
+        }
+        
+        .text-size-xs { font-size: 0.85rem; }
+        .text-size-xs h1 { font-size: 1.6rem; }
+        .text-size-xs h2 { font-size: 1.4rem; }
+        .text-size-xs h3 { font-size: 1.2rem; }
+        .text-size-sm { font-size: 0.95rem; }
+        .text-size-sm h1 { font-size: 1.85rem; }
+        .text-size-sm h2 { font-size: 1.6rem; }
+        .text-size-sm h3 { font-size: 1.35rem; }
+        .text-size-md { font-size: 1.1rem; }
+        .text-size-md h1 { font-size: 2.25rem; }
+        .text-size-md h2 { font-size: 1.85rem; }
+        .text-size-md h3 { font-size: 1.55rem; }
+        .text-size-lg { font-size: 1.25rem; }
+        .text-size-lg h1 { font-size: 2.65rem; }
+        .text-size-lg h2 { font-size: 2.15rem; }
+        .text-size-lg h3 { font-size: 1.8rem; }
+        .text-size-xl { font-size: 1.45rem; }
+        .text-size-xl h1 { font-size: 3.2rem; }
+        .text-size-xl h2 { font-size: 2.6rem; }
+        .text-size-xl h3 { font-size: 2.1rem; }
+        .width-narrow { max-width: 680px; }
+        .width-medium { max-width: 880px; }
+        .width-wide { max-width: 100%; }
+        .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4 {
+            font-weight: 700;
+            margin-top: 1.6em;
+            margin-bottom: 0.8em;
+            line-height: 1.3;
+        }
+        .markdown-body p { margin-bottom: 1.4em; }
+        .markdown-body ul, .markdown-body ol {
+            margin-bottom: 1.5em;
+            padding-left: 1.75em;
+        }
+        .markdown-body ul { list-style-type: disc; }
+        .markdown-body ol { list-style-type: decimal; }
+        .markdown-body li { margin-bottom: 0.5em; }
+        
+        .markdown-body blockquote {
+            border-left: 4px solid var(--accent);
+            padding: 0.5rem 1.25rem;
+            margin: 1.8em 0;
+            opacity: 0.95;
+            background-color: var(--bg-blockquote);
+        }
+        
+        .markdown-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2em 0;
+            font-size: 0.95em;
+        }
+        .markdown-body th, .markdown-body td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            text-align: left;
+        }
+        
+        .markdown-body pre {
+            padding: 1.1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin: 1.5em 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.88em;
+            background-color: var(--bg-blockquote);
+            border: 1px solid var(--border-color);
+        }
+        .markdown-body code {
+            font-family: 'Fira Code', monospace;
+            padding: 0.2em 0.4em;
+            border-radius: 0.25rem;
+            font-size: 0.85em;
+            background-color: var(--bg-blockquote);
+        }
+        #preview-pane {
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+        /* Print Override */
+        @media print {
+            .no-print { display: none !important; }
+            .print-full { width: 100% !important; max-width: 100% !important; height: auto !important; }
+            body { background: white !important; color: black !important; }
+        }
+    </style>
+</head>
+<body class="app-bg text-main transition-colors duration-300 h-screen h-[100dvh] flex flex-col overflow-hidden" id="app-container">
+    <!-- Main Workspace Container -->
+    <div class="flex flex-1 overflow-hidden relative h-full">
+        
+        <!-- Sidebar Backdrop Overlay (Active under lg desktop breakpoint) -->
+        <div id="sidebar-overlay" onclick="toggleSidebar(false)" class="no-print hidden fixed inset-0 bg-black/60 z-30 transition-opacity"></div>
+        <!-- ================= SIDEBAR (DOCUMENT MANAGER) ================= -->
+        <aside id="sidebar" class="no-print fixed lg:static inset-y-0 left-0 w-72 lg:w-64 card-bg border-r border-theme flex flex-col shrink-0 transition-transform duration-300 z-40 -translate-x-full lg:translate-x-0 shadow-2xl lg:shadow-none">
+            <!-- Sidebar Header -->
+            <div class="p-4 border-b border-theme flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="bg-indigo-600 text-white p-1.5 rounded-lg shadow-sm">
+                        <i data-lucide="book-open" class="w-4 h-4"></i>
+                    </div>
+                    <span class="font-bold text-sm tracking-tight text-main">CleanMark Docs</span>
+                </div>
+                <!-- Collapse sidebar button (visible on all screens to guarantee sliding control) -->
+                <button onclick="toggleSidebar(false)" class="p-1.5 rounded-lg hover-theme text-muted" title="মেনু বন্ধ করুন">
+                    <i data-lucide="chevrons-left" class="w-4 h-4 lg:block hidden"></i>
+                    <i data-lucide="x" class="w-4 h-4 lg:hidden block text-red-500 font-bold"></i>
+                </button>
+            </div>
+            <!-- New Document & Quick Upload Block -->
+            <div class="p-3 space-y-2">
+                <button onclick="createNewDocument()" class="w-full flex items-center justify-center gap-2 py-2.5 px-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-md transition">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span>নতুন ডকুমেন্ট</span>
+                </button>
+                <div class="flex gap-1">
+                    <button onclick="triggerImport()" class="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-muted rounded-lg text-[11px] font-medium transition" title="মার্কডাউন ফাইল আপলোড">
+                        <i data-lucide="upload" class="w-3.5 h-3.5"></i> ইম্পোর্ট
+                    </button>
+                    <button onclick="exportMarkdownFile()" class="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-muted rounded-lg text-[11px] font-medium transition" title="ডাউনলোড মার্কডাউন">
+                        <i data-lucide="download" class="w-3.5 h-3.5"></i> এক্সপোর্ট
+                    </button>
+                </div>
+                <input type="file" id="file-import-input" accept=".md,.txt" class="hidden" onchange="handleFileImport(event)">
+            </div>
+            <!-- Live Document Search Bar -->
+            <div class="px-3 pb-2">
+                <div class="relative flex items-center">
+                    <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 text-muted pointer-events-none"></i>
+                    <input type="text" id="search-input" oninput="searchDocuments(this.value)" placeholder="ডকুমেন্ট খুঁজুন..." class="w-full text-xs pl-8 pr-3 py-1.5 rounded-lg border border-theme input-bg focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                </div>
+            </div>
+            <!-- Document List Section -->
+            <div class="flex-1 overflow-y-auto px-2 pb-4">
+                <p class="text-[10px] uppercase font-bold text-muted tracking-wider px-3 mb-2">ডকুমেন্ট তালিকা</p>
+                <div id="document-list" class="space-y-1">
+                    <!-- Injected via JavaScript -->
+                </div>
+            </div>
+            <!-- Sidebar Footer -->
+            <div class="p-3 border-t border-theme text-xs">
+                <button onclick="confirmResetAll()" class="w-full text-left flex items-center gap-2 py-2 px-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    <span>সকল ডাটা মুছুন</span>
+                </button>
+            </div>
+        </aside>
+        <!-- Sidebar Floating Toggle Button for collapsed layout (Visible below lg layout) -->
+        <button id="sidebar-toggle-btn" onclick="toggleSidebar(true)" class="no-print fixed left-4 bottom-4 bg-indigo-600 text-white p-3.5 rounded-full shadow-2xl z-30 hover:bg-indigo-700 transition lg:hidden" title="মেনু খুলুন">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <!-- ================= MAIN WORKSPACE AREA ================= -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden relative h-full">
+            <!-- Top Control Bar / Toolbar -->
+            <header class="no-print border-b border-theme px-4 py-3 sticky top-0 z-20 transition-colors duration-300 card-bg flex flex-wrap items-center justify-between gap-3 shrink-0">
+                <!-- Left Title Panel -->
+                <div class="flex items-center gap-3">
+                    <!-- Hamburger button to open menu if collapsed on desktop or on mobile -->
+                    <button id="header-menu-btn" onclick="toggleSidebar(true)" class="p-1.5 rounded-lg hover-theme text-muted">
+                        <i data-lucide="menu" class="w-5 h-5"></i>
+                    </button>
+                    <div>
+                        <!-- Editable Document Title -->
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="active-document-title" oninput="renameActiveDocument(this.value)" class="text-sm font-bold bg-transparent border-b border-transparent hover:border-theme focus:border-indigo-500 focus:outline-none py-0.5 text-main max-w-[120px] sm:max-w-xs transition" value="Untitled Document">
+                            <span class="text-[10px] bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 px-1.5 py-0.5 rounded font-semibold hidden" id="unsaved-badge">অসংরক্ষিত</span>
+                            <span class="text-[10px] bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 px-1.5 py-0.5 rounded" id="saved-badge">ডিভাইসে সংরক্ষিত</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Customization / Setting Controls -->
+                <div class="flex items-center flex-wrap gap-2 text-xs">
+                    
+                    <!-- EXPLICIT SAVE ACTION BUTTON (HIGHLY REQUESTED) -->
+                    <button id="manual-save-btn" onclick="manualSaveCurrentDoc()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-all shadow-md relative group animate-none" title="লোকাল ব্রাউজার স্টোরেজে সেভ করুন">
+                        <i data-lucide="save" class="w-4 h-4"></i>
+                        <span>সেভ করুন</span>
+                        <!-- Unsaved Glowing Indicator dot -->
+                        <span id="save-glow-dot" class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 border border-white dark:border-slate-800 rounded-full animate-ping hidden"></span>
+                    </button>
+                    <!-- Theme Selector (Perfected Layout Binding) -->
+                    <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-lg gap-0.5">
+                        <button onclick="setTheme('light')" id="theme-btn-light" class="p-1 rounded flex items-center justify-center w-6 h-6 text-muted" title="লাইট মোড">
+                            <i data-lucide="sun" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="setTheme('dark')" id="theme-btn-dark" class="p-1 rounded flex items-center justify-center w-6 h-6 text-muted" title="ডার্ক মোড">
+                            <i data-lucide="moon" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="setTheme('sepia')" id="theme-btn-sepia" class="p-1 rounded flex items-center justify-center w-6 h-6 font-extrabold" title="সেপিয়া থিম">
+                            S
+                        </button>
+                        <button onclick="setTheme('slate')" id="theme-btn-slate" class="p-1 rounded flex items-center justify-center w-6 h-6 font-bold" title="স্লেট ব্লু থিম">
+                            B
+                        </button>
+                    </div>
+                    <!-- Font Family Selector (Bengali & English) -->
+                    <select onchange="setFontFamily(this.value)" id="font-select" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg px-2 py-1.5 text-xs focus:ring-1 focus:ring-indigo-500 outline-none border-none cursor-pointer">
+                        <optgroup label="Bengali Fonts (বাংলা ফন্ট)">
+                            <option value="hind" selected>Hind Siliguri (SANS)</option>
+                            <option value="noto">Noto Serif Bengali (SERIF)</option>
+                            <option value="mina">Mina (Cursive)</option>
+                            <option value="atma">Atma (Playful)</option>
+                        </optgroup>
+                        <optgroup label="English Fonts (ইংরেজি ফন্ট)">
+                            <option value="inter">Inter (SANS)</option>
+                            <option value="lora">Lora (Classic SERIF)</option>
+                            <option value="playfair">Playfair Display (Premium SERIF)</option>
+                            <option value="mono">Fira Code (Code / Mono)</option>
+                        </optgroup>
+                    </select>
+                    <!-- Text Size Customizer (XS to XL) -->
+                    <div class="inline-flex rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5">
+                        <button onclick="setTextSize('xs')" class="size-btn px-2 py-1 rounded-md" id="size-xs">XS</button>
+                        <button onclick="setTextSize('sm')" class="size-btn px-2 py-1 rounded-md" id="size-sm">S</button>
+                        <button onclick="setTextSize('md')" class="size-btn px-2 py-1 rounded-md" id="size-md">M</button>
+                        <button onclick="setTextSize('lg')" class="size-btn px-2 py-1 rounded-md" id="size-lg">L</button>
+                        <button onclick="setTextSize('xl')" class="size-btn px-2 py-1 rounded-md" id="size-xl">XL</button>
+                    </div>
+                    <!-- Layout Width Selector -->
+                    <select onchange="setPageWidth(this.value)" id="width-select" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg px-2 py-1.5 text-xs focus:ring-1 focus:ring-indigo-500 outline-none border-none cursor-pointer">
+                        <option value="narrow">Narrow (পড়ার সেরা সাইজ)</option>
+                        <option value="medium" selected>Medium (স্বাভাবিক)</option>
+                        <option value="wide">Wide (ফুল স্ক্রিন)</option>
+                    </select>
+                    <!-- Action Controls -->
+                    <div class="flex items-center gap-1">
+                        <!-- Reading Mode Trigger -->
+                        <button id="btn-focus-mode" onclick="toggleFocusMode()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 rounded-lg transition" title="রিডিং মোড অন করুন">
+                            <i data-lucide="eye" class="w-4 h-4" id="focus-icon"></i>
+                            <span id="focus-text" class="hidden sm:inline">রিডিং মোড</span>
+                        </button>
+                        <button onclick="window.print()" class="p-1.5 text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 rounded-lg transition" title="প্রিন্ট বা PDF করুন">
+                            <i data-lucide="printer" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="copyOutputHTML()" class="p-1.5 text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 rounded-lg transition" title="রেন্ডার করা HTML কপি করুন">
+                            <i data-lucide="copy" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Responsive Tab Selection for Mobile/Tablet Layout -->
+                <div id="mobile-tabs" class="lg:hidden flex rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5 w-full justify-center">
+                    <button onclick="switchMobileTab('edit')" id="tab-edit" class="flex-1 flex items-center justify-center gap-1 px-4 py-1.5 rounded-md text-xs font-semibold">
+                        <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> এডিটর
+                    </button>
+                    <button onclick="switchMobileTab('preview')" id="tab-preview" class="flex-1 flex items-center justify-center gap-1 px-4 py-1.5 rounded-md text-xs font-semibold">
+                        <i data-lucide="book-open" class="w-3.5 h-3.5"></i> প্রিভিউ রিডার
+                    </button>
+                </div>
+            </header>
+            <!-- Main Content Splits (Workspace Grid) -->
+            <main class="flex-1 flex overflow-hidden min-h-0 relative h-full">
+                
+                <!-- LEFT SPLIT: MARKDOWN INPUT AREA -->
+                <div id="editor-pane" class="w-full lg:w-1/2 flex flex-col border-r border-theme transition-all duration-300 no-print h-full min-h-0 overflow-hidden">
+                    <!-- Helper formatting toolbar -->
+                    <div class="border-b border-theme px-4 py-2 flex items-center gap-1 flex-wrap justify-between bg-slate-50 dark:bg-slate-900/50">
+                        <div class="flex items-center gap-0.5 flex-wrap">
+                            <button onclick="insertMarkdown('bold')" class="p-1.5 rounded-md hover-theme text-muted" title="Bold">
+                                <i data-lucide="bold" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <button onclick="insertMarkdown('italic')" class="p-1.5 rounded-md hover-theme text-muted" title="Italic">
+                                <i data-lucide="italic" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <button onclick="insertMarkdown('header')" class="p-1.5 rounded-md hover-theme text-muted" title="Heading">
+                                <i data-lucide="heading" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <button onclick="insertMarkdown('link')" class="p-1.5 rounded-md hover-theme text-muted" title="Link">
+                                <i data-lucide="link" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <button onclick="insertMarkdown('quote')" class="p-1.5 rounded-md hover-theme text-muted" title="Quote">
+                                <i data-lucide="quote" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <button onclick="insertMarkdown('code')" class="p-1.5 rounded-md hover-theme text-muted" title="Code block">
+                                <i data-lucide="code" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <button onclick="insertMarkdown('list-ul')" class="p-1.5 rounded-md hover-theme text-muted" title="Bullet List">
+                                <i data-lucide="list" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <button onclick="insertMarkdown('table')" class="p-1.5 rounded-md hover-theme text-muted" title="Table">
+                                <i data-lucide="table" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                        <button onclick="clearEditor()" class="text-xs text-red-500 hover:text-red-600 font-semibold px-2 py-1 rounded hover-theme" title="সব মুছে ফেলুন">
+                            ক্লিয়ার করুন
+                        </button>
+                    </div>
+                    <!-- Textarea workspace -->
+                    <textarea id="markdown-input" 
+                              class="flex-1 w-full p-6 font-mono text-sm leading-relaxed focus:outline-none resize-none bg-transparent text-main placeholder-slate-400 dark:placeholder-slate-600"
+                              placeholder="এখানে আপনার Markdown লেখাটি লিখুন বা পেস্ট (Paste) করুন..."
+                              oninput="onContentChange()"></textarea>
+                </div>
+                <!-- RIGHT SPLIT: RENDERED PAPERS PREVIEW -->
+                <div id="preview-pane" class="w-full lg:w-1/2 flex flex-col overflow-y-auto print-full transition-all duration-300 h-full min-h-0">
+                    <div class="flex-1 px-6 py-8 md:px-12 md:py-12" id="preview-scroll-container">
+                        
+                        <!-- Document Wrapper to preserve real book/paper reading layout -->
+                        <article id="rendered-output" class="markdown-body mx-auto transition-all duration-300">
+                            <!-- Parsed markdown will load here -->
+                        </article>
+                    </div>
+                </div>
+            </main>
+            <!-- Stats Footer Bar -->
+            <footer class="no-print border-t border-theme px-4 py-2 text-[11px] text-muted transition-colors duration-300 flex flex-wrap justify-between items-center gap-3 shrink-0">
+                <div class="flex items-center gap-4">
+                    <span class="flex items-center gap-1">
+                        <i data-lucide="file" class="w-3.5 h-3.5 text-indigo-500"></i>
+                        <span id="char-count" class="font-bold">0</span> টি অক্ষর
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <i data-lucide="text" class="w-3.5 h-3.5 text-emerald-500"></i>
+                        <span id="word-count" class="font-bold">0</span> টি শব্দ
+                    </span>
+                    <span class="flex items-center gap-1" title=" reading speed ">
+                        <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-500"></i>
+                        পড়তে লাগবে ~ <span id="reading-time" class="font-bold">0</span> মিনিট
+                    </span>
+                </div>
+                <div>
+                    <span id="backup-badge" class="bg-indigo-50 text-indigo-700 px-2.5 py-0.5 rounded-full dark:bg-indigo-950/30 dark:text-indigo-400 font-semibold flex items-center gap-1 transition-all">
+                        <span class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse"></span>
+                        মেমরিতে রেডি
+                    </span>
+                </div>
+            </footer>
+        </div>
+    </div>
+    <!-- Floating Close Focus Button inside Reading Mode -->
+    <button id="exit-focus-btn" onclick="toggleFocusMode()" class="no-print hidden fixed bottom-6 right-6 flex items-center gap-2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-2.5 rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-all z-50 text-xs font-bold">
+        <i data-lucide="eye-off" class="w-4 h-4"></i>
+        <span>রিডিং মোড বন্ধ করুন</span>
+    </button>
+    <!-- Custom Modal Dialog Box -->
+    <div id="custom-modal" class="no-print fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
+        <div class="card-bg rounded-xl p-6 max-w-sm w-full mx-4 shadow-2xl border border-theme transform scale-95 transition-all duration-300">
+            <div class="flex items-center gap-3 text-red-500 mb-3">
+                <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+                <h3 class="font-bold text-lg text-main" id="modal-title">নিশ্চিত করুন</h3>
+            </div>
+            <p class="text-xs text-muted mb-5" id="modal-desc">আপনি কি নিশ্চিত যে এই কাজটি করতে চান?</p>
+            <div class="flex justify-end gap-2 text-xs font-semibold flex-wrap" id="modal-actions">
+                <!-- Buttons dynamically loaded -->
+            </div>
+        </div>
+    </div>
+    <!-- Simple Toast Notification Box -->
+    <div id="toast" class="no-print fixed bottom-12 left-1/2 transform -translate-x-1/2 translate-y-20 opacity-0 bg-slate-950 text-white dark:bg-white dark:text-slate-950 text-xs font-semibold px-4 py-3 rounded-xl shadow-lg transition-all duration-300 flex items-center gap-2 z-50 border border-slate-800 dark:border-slate-200">
+        <i data-lucide="check-circle" class="w-4.5 h-4.5 text-emerald-400"></i>
+        <span id="toast-message">কাজটি সফল হয়েছে!</span>
+    </div>
+    <script>
+        // System States & Configurations
+        let state = {
+            docs: [],
+            activeDocId: null,
+            theme: 'light',
+            textSize: 'md',
+            fontFamily: 'hind',
+            layoutWidth: 'medium',
+            isSidebarOpen: false, 
+            isFocusMode: false,
+            activeMobileTab: 'edit',
+            searchQuery: '',
+            isUnsaved: false
+        };
+        const defaultSampleMarkdown = `# 🌟 স্বাগতম CleanMark প্রো-তে!
+এটি একটি **প্রিমিয়াম মার্কডাউন রিডার ও এডিটর** যেখানে আপনি আপনার যেকোনো সাধারণ টেক্সট বা ডিরেক্ট নোট পেস্ট করে অসম্ভব সুন্দর করে সাজিয়ে পড়তে পারেন। 
+এখানে আপনি আপনার ফন্ট সাইজ ছোট-বড় করা, ফন্ট স্টাইল পরিবর্তন, কালার থিম পরিবর্তন এবং একদম পরিচ্ছন্ন ডিস্টার্বশন-ফ্রি রিডিং মোড উপভোগ করতে পারবেন।
+---
+## 🚀 চমৎকার সব ফিচারের ব্যবহার:
+### ১. টেক্সট ফরম্যাটিং স্টাইল
+আপনি সহজেই আপনার টেক্সটকে করতে পারেন **বোল্ড (Bold)**, *ইটালিক (Italic)* বা ~~কেটে ফেলা লেখা~~। 
+> "একটি ভালো লেখা পড়ার অভিজ্ঞতা আপনার চিন্তাভাবনা আরও শাণিত করে। এই অ্যাপ্লিকেশনটি আপনার পড়ার আরামকে সর্বোচ্চ গুরুত্ব দেয়।" — *টিম ক্লিনমার্ক*
+---
+### ২. আধুনিক ডাটা টেবিল প্রেজেন্টেশন
+এখানে জটিল ডাটা খুব চমৎকার ডিজাইনে দেখতে পাবেন:
+
+| ফিচারের নাম | সুবিধা | মোড সাপোর্ট |
+| :--- | :--- | :--- |
+| ডাইনামিক সাইজিং | লেখার সাইজ ছোট-বড় করার সুবিধা | লাইভ |
+| সেপিয়া রিডিং | চোখে কোনো চাপ ছাড়া দীর্ঘ সময় পড়ার ফিল | লাইট/ডার্ক/সেপিয়া |
+| পিডিএফ প্রিন্ট | যেকোনো ডকুমেন্ট এক ক্লিকে অফলাইনে সেভ করার সুবিধা | অল ডিভাইস |
+
+---
+### ৩. ক্লিন কোড ব্লক ও কোডিং হাইলাইটার
+আপনি যদি কোড লাভার হয়ে থাকেন, তবে কোড ব্লক দেখতে পাবেন অত্যন্ত ঝকঝকে ফন্টে:
+\`\`\`javascript
+// একটি চমৎকার হ্যালো ওয়ার্ল্ড ফাংশন
+function readyToRead(user) {
+    console.log("হ্যালো " + user + ", আপনার পড়ার অভিজ্ঞতা চমৎকার হোক!");
+    return true;
+}
+readyToRead("জ্ঞানী পাঠক");
+\`\`\`
+---
+## 🛠️ কুইক টিপস:
+* আপনার স্ক্রিনের উপরের **থিম আইকনগুলোতে** ক্লিক করে চোখের উপযোগী থিম নির্বাচন করুন।
+* লেখার ফন্ট বড়-ছোট করতে **XS, S, M, L, XL** বাটন ব্যবহার করুন।
+* ডানে-বামে উভয় প্যানেল সরাতে না চাইলে শুধু লেখাটি পড়ার জন্য উপরের **"রিডিং মোড"** অন করুন।
+ his is a test line to ensure correctness.
+আপনার লেখা এখানে পেস্ট করুন এবং পড়ার আরাম উপভোগ করুন! 💖`;
+        // Load complete data from local storage on bootstrap
+        window.onload = function() {
+            lucide.createIcons();
+            
+            // Configure markdown parser settings
+            marked.setOptions({
+                breaks: true,
+                gfm: true
+            });
+            // Initialize app data from localStorage
+            loadStateFromStorage();
+            
+            // Apply layout size listeners
+            checkScreenLayout();
+            window.addEventListener('resize', checkScreenLayout);
+        };
+        // Smart dynamic sequence title generator
+        function getNextDocumentTitle() {
+            let index = 1;
+            while (true) {
+                let candidate = `ডকুমেন্ট ${index}`;
+                if (!state.docs.some(d => d.title === candidate)) {
+                    return candidate;
+                }
+                index++;
+            }
+        }
+        function loadStateFromStorage() {
+            // Load saved settings
+            state.theme = localStorage.getItem('cm_theme') || 'light';
+            state.textSize = localStorage.getItem('cm_text_size') || 'md';
+            state.fontFamily = localStorage.getItem('cm_font') || 'hind';
+            state.layoutWidth = localStorage.getItem('cm_width') || 'medium';
+            // Load Saved Docs
+            const savedDocs = localStorage.getItem('cm_documents');
+            if (savedDocs) {
+                try {
+                    state.docs = JSON.parse(savedDocs);
+                } catch (e) {
+                    state.docs = [];
+                }
+            }
+            // Create initial doc if list is empty
+            if (state.docs.length === 0) {
+                const initDoc = {
+                    id: 'doc_' + Date.now(),
+                    title: 'স্বাগতম টিউটোরিয়াল',
+                    content: defaultSampleMarkdown,
+                    updatedAt: new Date().toISOString()
+                };
+                state.docs.push(initDoc);
+                localStorage.setItem('cm_documents', JSON.stringify(state.docs));
+            }
+            // Set current active document
+            const savedActiveId = localStorage.getItem('cm_active_doc_id');
+            const docExists = state.docs.some(d => d.id === savedActiveId);
+            if (savedActiveId && docExists) {
+                state.activeDocId = savedActiveId;
+            } else {
+                state.activeDocId = state.docs[0].id;
+            }
+            // Apply all states dynamically
+            setTheme(state.theme);
+            setTextSize(state.textSize);
+            setFontFamily(state.fontFamily);
+            setPageWidth(state.layoutWidth);
+            // Synchronize selectors
+            document.getElementById('font-select').value = state.fontFamily;
+            document.getElementById('width-select').value = state.layoutWidth;
+            // Load active document content
+            loadActiveDoc();
+            renderDocumentList();
+            setUnsavedState(false);
+        }
+        // Save State values to LocalStorage
+        function saveDocsToStorage() {
+            localStorage.setItem('cm_documents', JSON.stringify(state.docs));
+            localStorage.setItem('cm_active_doc_id', state.activeDocId);
+        }
+        // Set manual save indicators
+        function setUnsavedState(isUnsaved) {
+            state.isUnsaved = isUnsaved;
+            const unsavedBadge = document.getElementById('unsaved-badge');
+            const savedBadge = document.getElementById('saved-badge');
+            const saveGlowDot = document.getElementById('save-glow-dot');
+            const saveBtn = document.getElementById('manual-save-btn');
+            if (isUnsaved) {
+                unsavedBadge.classList.remove('hidden');
+                savedBadge.classList.add('hidden');
+                saveGlowDot.classList.remove('hidden');
+                saveBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+                saveBtn.classList.add('bg-amber-600', 'hover:bg-amber-700', 'ring-2', 'ring-amber-400', 'animate-pulse');
+                document.getElementById('backup-badge').innerHTML = `
+                    <span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>
+                    সেভ করা হয়নি
+                `;
+                document.getElementById('backup-badge').className = "bg-amber-50 text-amber-700 px-2.5 py-0.5 rounded-full dark:bg-amber-950/30 dark:text-amber-400 font-semibold flex items-center gap-1 transition-all";
+            } else {
+                unsavedBadge.classList.add('hidden');
+                savedBadge.classList.remove('hidden');
+                saveGlowDot.classList.add('hidden');
+                saveBtn.classList.remove('bg-amber-600', 'hover:bg-amber-700', 'ring-2', 'ring-amber-400', 'animate-pulse');
+                saveBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+                document.getElementById('backup-badge').innerHTML = `
+                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                    ডিভাইসে সংরক্ষিত
+                `;
+                document.getElementById('backup-badge').className = "bg-emerald-50 text-emerald-700 px-2.5 py-0.5 rounded-full dark:bg-emerald-950/30 dark:text-emerald-400 font-semibold flex items-center gap-1 transition-all";
+            }
+        }
+        // Save Current Document manually
+        function manualSaveCurrentDoc() {
+            const activeDoc = state.docs.find(d => d.id === state.activeDocId);
+            if (activeDoc) {
+                const textarea = document.getElementById('markdown-input');
+                activeDoc.content = textarea.value;
+                activeDoc.updatedAt = new Date().toISOString();
+                
+                saveDocsToStorage();
+                renderDocumentList();
+                setUnsavedState(false);
+                showToast("সফলভাবে লোকাল স্টোরেজে সংরক্ষিত হয়েছে!");
+            }
+        }
+        // Render Sidebar Document List Dynamically (supporting Search)
+        function renderDocumentList() {
+            const listContainer = document.getElementById('document-list');
+            listContainer.innerHTML = '';
+            // Filter based on search input
+            const filteredDocs = state.docs.filter(doc => 
+                doc.title.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
+                doc.content.toLowerCase().includes(state.searchQuery.toLowerCase())
+            );
+            if (filteredDocs.length === 0) {
+                listContainer.innerHTML = `<p class="text-center text-[11px] text-muted py-4">কোনো ডকুমেন্ট পাওয়া যায়নি!</p>`;
+                return;
+            }
+            filteredDocs.forEach(doc => {
+                const isActive = doc.id === state.activeDocId;
+                const activeClasses = isActive 
+                    ? 'bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 font-semibold border-l-4 border-indigo-600 pl-1.5 shadow-sm' 
+                    : 'text-slate-700 dark:text-slate-300 hover-theme';
+                const docItem = document.createElement('div');
+                docItem.className = `group flex items-center justify-between p-2.5 rounded-lg text-xs cursor-pointer transition-all ${activeClasses}`;
+                docItem.setAttribute('onclick', `switchDocument('${doc.id}')`);
+                docItem.innerHTML = `
+                    <div class="flex items-center gap-2 min-w-0 flex-1">
+                        <i data-lucide="file-text" class="w-4 h-4 shrink-0 opacity-70 text-indigo-500"></i>
+                        <span class="truncate pr-1">${escapeHtml(doc.title)}</span>
+                    </div>
+                    <!-- Delete Button shown on hover -->
+                    <button onclick="confirmDeleteDoc(event, '${doc.id}')" class="p-1 rounded text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 lg:opacity-0 group-hover:opacity-100 transition duration-150" title="ডকুমেন্টটি মুছুন">
+                        <i data-lucide="trash" class="w-3.5 h-3.5"></i>
+                    </button>
+                `;
+                listContainer.appendChild(docItem);
+            });
+            lucide.createIcons();
+        }
+        // Search engine logic
+        function searchDocuments(query) {
+            state.searchQuery = query;
+            renderDocumentList();
+        }
+        function loadActiveDoc() {
+            const activeDoc = state.docs.find(d => d.id === state.activeDocId);
+            if (activeDoc) {
+                document.getElementById('markdown-input').value = activeDoc.content;
+                document.getElementById('active-document-title').value = activeDoc.title;
+                renderMarkdown();
+            }
+        }
+        // Real-time title sync with sidebar item to avoid flicker
+        function updateActiveSidebarItemTitle(title) {
+            const listContainer = document.getElementById('document-list');
+            const activeItem = listContainer.querySelector('.border-l-4');
+            if (activeItem) {
+                const titleSpan = activeItem.querySelector('span.truncate');
+                if (titleSpan) {
+                    titleSpan.innerText = title;
+                }
+            }
+        }
+        // Handle typing changes (Triggers "Unsaved" state with real-time automatic renaming)
+        function onContentChange() {
+            const activeDoc = state.docs.find(d => d.id === state.activeDocId);
+            if (activeDoc) {
+                const textarea = document.getElementById('markdown-input');
+                activeDoc.content = textarea.value;
+                activeDoc.updatedAt = new Date().toISOString();
+                // Automatically try to extract first header line to rename title if it is a default name
+                const isDefaultTitle = /^ডকুমেন্ট \d+$/.test(activeDoc.title) || 
+                                       activeDoc.title === 'নতুন ডকুমেন্ট' || 
+                                       activeDoc.title === 'Untitled Document' ||
+                                       activeDoc.title === 'স্বাগতম টিউটোরিয়াল';
+                                       
+                if (isDefaultTitle) {
+                    const firstLine = textarea.value.trim().split('\n')[0];
+                    if (firstLine && firstLine.startsWith('# ')) {
+                        const cleanTitle = firstLine.replace('# ', '').substring(0, 24).trim();
+                        if (cleanTitle) {
+                            activeDoc.title = cleanTitle;
+                            document.getElementById('active-document-title').value = cleanTitle;
+                            updateActiveSidebarItemTitle(cleanTitle);
+                        }
+                    }
+                }
+                setUnsavedState(true);
+                renderMarkdown();
+            }
+        }
+        // Create fresh new empty document
+        function createNewDocument() {
+            if (state.isUnsaved) {
+                openCustomModal(
+                    "নতুন ফাইল তৈরি করবেন?",
+                    "আপনার বর্তমান ফাইলে কিছু পরিবর্তন করা হয়েছে যা এখনো সেভ করা হয়নি। নতুন ফাইল তৈরির আগে কি এটি সেভ করতে চান?",
+                    [
+                        {
+                            text: "সেভ করে নতুন ফাইল খুলুন",
+                            class: "px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg",
+                            onClick: () => {
+                                manualSaveCurrentDoc();
+                                executeCreation();
+                            }
+                        },
+                        {
+                            text: "সরাসরি নতুন ফাইল খুলুন",
+                            class: "px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg",
+                            onClick: () => {
+                                executeCreation();
+                            }
+                        },
+                        {
+                            text: "বাতিল",
+                            class: "px-4 py-2 text-muted bg-slate-100 dark:bg-slate-800 rounded-lg",
+                            onClick: () => {}
+                        }
+                    ]
+                );
+                return;
+            }
+            executeCreation();
+        }
+        function executeCreation() {
+            const nextTitle = getNextDocumentTitle();
+            const newDoc = {
+                id: 'doc_' + Date.now(),
+                title: nextTitle,
+                content: `# ${nextTitle}\n\nএখানে আপনার লেখা শুরু করুন...`,
+                updatedAt: new Date().toISOString()
+            };
+            state.docs.unshift(newDoc);
+            state.activeDocId = newDoc.id;
+            
+            saveDocsToStorage();
+            loadActiveDoc();
+            renderDocumentList();
+            setUnsavedState(false);
+            showToast(`"${nextTitle}" সফলভাবে তৈরি করা হয়েছে!`);
+            
+            // On mobile/tablet, automatically close drawer and switch tab
+            if (window.innerWidth < 1024) {
+                toggleSidebar(false);
+                switchMobileTab('edit');
+            }
+        }
+        // Import Markdown/Text Files from computer
+        function triggerImport() {
+            document.getElementById('file-import-input').click();
+        }
+        function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                const fileName = file.name.replace(/\.[^/.]+$/, "");
+                const newDoc = {
+                    id: 'doc_' + Date.now(),
+                    title: fileName,
+                    content: content,
+                    updatedAt: new Date().toISOString()
+                };
+                
+                state.docs.unshift(newDoc);
+                state.activeDocId = newDoc.id;
+                saveDocsToStorage();
+                loadActiveDoc();
+                renderDocumentList();
+                setUnsavedState(false);
+                showToast("ফাইল সফলভাবে ইম্পোর্ট করা হয়েছে!");
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // Reset input
+        }
+        // Export active document as `.md` file
+        function exportMarkdownFile() {
+            const activeDoc = state.docs.find(d => d.id === state.activeDocId);
+            if (!activeDoc) return;
+            const blob = new Blob([activeDoc.content], { type: 'text/markdown;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', `${activeDoc.title || 'cleanmark-doc'}.md`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("মার্কডাউন ফাইলটি ডাউনলোড করা হয়েছে!");
+        }
+        // Switch to selected document from list with robust rollback system
+        function switchDocument(docId) {
+            if (state.isUnsaved) {
+                openCustomModal(
+                    "অসংরক্ষিত পরিবর্তন রয়েছে!",
+                    "আপনার বর্তমান ফাইলে কিছু পরিবর্তন করা হয়েছে যা এখনো সেভ করা হয়নি। চলে যাওয়ার আগে কি সেভ করতে চান?",
+                    [
+                        {
+                            text: "সেভ করে চলে যান",
+                            class: "px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg",
+                            onClick: () => {
+                                manualSaveCurrentDoc();
+                                executeSwitch(docId);
+                            }
+                        },
+                        {
+                            text: "পরিবর্তন বাতিল করে চলে যান",
+                            class: "px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg",
+                            onClick: () => {
+                                executeSwitch(docId);
+                            }
+                        },
+                        {
+                            text: "বাতিল",
+                            class: "px-4 py-2 text-muted bg-slate-100 dark:bg-slate-800 rounded-lg",
+                            onClick: () => {}
+                        }
+                    ]
+                );
+                return;
+            }
+            executeSwitch(docId);
+        }
+        function executeSwitch(docId) {
+            // Discard unsaved changes by reloading pristine storage from LocalStorage before switching
+            const savedDocs = localStorage.getItem('cm_documents');
+            if (savedDocs) {
+                try {
+                    state.docs = JSON.parse(savedDocs);
+                } catch (e) {
+                    // Fail-safe
+                }
+            }
+            
+            state.activeDocId = docId;
+            saveDocsToStorage();
+            loadActiveDoc();
+            renderDocumentList();
+            setUnsavedState(false);
+            
+            // Close mobile/tablet drawer if open
+            if (window.innerWidth < 1024) {
+                toggleSidebar(false);
+            }
+            showToast("ডকুমেন্ট লোড হয়েছে");
+        }
+        // Rename document title manually via Header Input
+        function renameActiveDocument(newTitle) {
+            const activeDoc = state.docs.find(d => d.id === state.activeDocId);
+            if (activeDoc) {
+                activeDoc.title = newTitle || 'Untitled Document';
+                activeDoc.updatedAt = new Date().toISOString();
+                setUnsavedState(true);
+                updateActiveSidebarItemTitle(activeDoc.title);
+            }
+        }
+        // Safely trigger document delete
+        function confirmDeleteDoc(event, docId) {
+            event.stopPropagation(); // prevent loading item
+            
+            if (state.docs.length <= 1) {
+                showToast("দুঃখিত, একমাত্র শেষ ডকুমেন্টটি ডিলিট করা সম্ভব নয়।");
+                return;
+            }
+            const docToDelete = state.docs.find(d => d.id === docId);
+            openCustomModal(
+                `ডকুমেন্টটি মুছবেন?`,
+                `আপনি কি নিশ্চিত যে "${docToDelete.title}" ডকুমেন্টটি ডিলিট করতে চান? এই কাজ পুনরায় ফিরিয়ে আনা সম্ভব নয়।`,
+                [
+                    {
+                        text: "ডিলিট করুন",
+                        class: "px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg",
+                        onClick: () => {
+                            state.docs = state.docs.filter(d => d.id !== docId);
+                            
+                            if (state.activeDocId === docId) {
+                                state.activeDocId = state.docs[0].id;
+                            }
+                            
+                            saveDocsToStorage();
+                            loadActiveDoc();
+                            renderDocumentList();
+                            setUnsavedState(false);
+                            showToast("ডকুমেন্টটি মুছে ফেলা হয়েছে");
+                        }
+                    },
+                    {
+                        text: "বাতিল",
+                        class: "px-4 py-2 text-muted bg-slate-100 dark:bg-slate-800 rounded-lg",
+                        onClick: () => {}
+                    }
+                ]
+            );
+        }
+        // Confirm system clean reset
+        function confirmResetAll() {
+            openCustomModal(
+                `সব ডাটা মুছবেন?`,
+                `এর ফলে আপনার সকল পূর্বে সেভড ডকুমেন্টস চিরতরে মুছে যাবে। আপনি কি সব রিসেট করতে চান?`,
+                [
+                    {
+                        text: "হ্যাঁ, সব মুছুন",
+                        class: "px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg",
+                        onClick: () => {
+                            localStorage.clear();
+                            state.docs = [];
+                            loadStateFromStorage();
+                            showToast("সমস্ত মেমোরি খালি করা হয়েছে!");
+                        }
+                    },
+                    {
+                        text: "বাতিল",
+                        class: "px-4 py-2 text-muted bg-slate-100 dark:bg-slate-800 rounded-lg",
+                        onClick: () => {}
+                    }
+                ]
+            );
+        }
+        // Universal Custom Modal Builder
+        function openCustomModal(title, desc, buttons) {
+            const modal = document.getElementById('custom-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalDesc = document.getElementById('modal-desc');
+            const actionsContainer = document.getElementById('modal-actions');
+            modalTitle.innerText = title;
+            modalDesc.innerText = desc;
+            
+            actionsContainer.innerHTML = '';
+            buttons.forEach(btn => {
+                const buttonEl = document.createElement('button');
+                buttonEl.innerText = btn.text;
+                buttonEl.className = btn.class || "px-4 py-2 text-muted bg-slate-100 dark:bg-slate-800 rounded-lg transition-colors duration-150";
+                buttonEl.onclick = () => {
+                    btn.onClick();
+                    closeModal();
+                };
+                actionsContainer.appendChild(buttonEl);
+            });
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.querySelector('div').classList.remove('scale-95');
+            modal.querySelector('div').classList.add('scale-100');
+        }
+        function closeModal() {
+            const modal = document.getElementById('custom-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.querySelector('div').classList.remove('scale-100');
+            modal.querySelector('div').classList.add('scale-95');
+        }
+        // Render Markdown into secure beautifully compiled HTML
+        function renderMarkdown() {
+            const markdownText = document.getElementById('markdown-input').value;
+            const outputContainer = document.getElementById('rendered-output');
+            
+            const rawHtml = marked.parse(markdownText);
+            const cleanHtml = DOMPurify.sanitize(rawHtml);
+            
+            outputContainer.innerHTML = cleanHtml;
+            updateStats(markdownText);
+        }
+        // Count stats (Word, Char, Reading time)
+        function updateStats(text) {
+            const charCount = text.length;
+            const words = text.trim().split(/\s+/).filter(word => word.length > 0);
+            const wordCount = words.length;
+            const readingTime = Math.ceil(wordCount / 200);
+            document.getElementById('char-count').innerText = charCount.toLocaleString();
+            document.getElementById('word-count').innerText = wordCount.toLocaleString();
+            document.getElementById('reading-time').innerText = readingTime;
+        }
+        // Dynamic theme customization logic (With perfect global dark styling integration)
+        function setTheme(theme) {
+            state.theme = theme;
+            localStorage.setItem('cm_theme', theme);
+            const root = document.getElementById('app-container');
+            const htmlTag = document.documentElement;
+            // Manage Tailwind Global Dark Mode Class
+            if (theme === 'dark' || theme === 'slate') {
+                htmlTag.classList.add('dark');
+            } else {
+                htmlTag.classList.remove('dark');
+            }
+            // Sync app custom theme configurations
+            root.className = root.className.replace(/\btheme-\S+/g, '');
+            root.classList.add(`theme-${theme}`);
+            // Clear previous active indicator
+            document.querySelectorAll('[id^="theme-btn-"]').forEach(btn => {
+                btn.className = "p-1 rounded flex items-center justify-center w-6 h-6 text-muted hover-theme transition-all";
+            });
+            // Highlight selected theme btn
+            const activeBtn = document.getElementById(`theme-btn-${theme}`);
+            if (activeBtn) {
+                activeBtn.className = "p-1 rounded flex items-center justify-center w-6 h-6 bg-indigo-600/20 text-indigo-600 dark:text-indigo-400 font-extrabold border border-indigo-600/30";
+            }
+        }
+        // Dynamic Typography Adjustments (Font Size Selector)
+        function setTextSize(size) {
+            state.textSize = size;
+            localStorage.setItem('cm_text_size', size);
+            const output = document.getElementById('rendered-output');
+            output.className = output.className.replace(/\btext-size-\S+/g, '');
+            output.classList.add(`text-size-${size}`);
+            document.querySelectorAll('.size-btn').forEach(btn => {
+                btn.className = "size-btn px-2 py-1 rounded-md text-muted hover-theme transition-all";
+            });
+            const activeBtn = document.getElementById(`size-${size}`);
+            if (activeBtn) {
+                activeBtn.className = "size-btn px-2 py-1 rounded-md bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 shadow-xs font-bold";
+            }
+        }
+        // Apply Custom Fonts including premium Bangla Google Webfonts
+        function setFontFamily(font) {
+            state.fontFamily = font;
+            localStorage.setItem('cm_font', font);
+            const output = document.getElementById('rendered-output');
+            output.style.fontFamily = '';
+            if (font === 'hind') {
+                output.style.fontFamily = "'Hind Siliguri', 'Inter', sans-serif";
+            } else if (font === 'noto') {
+                output.style.fontFamily = "'Noto Serif Bengali', 'Lora', serif";
+            } else if (font === 'mina') {
+                output.style.fontFamily = "'Mina', 'Inter', sans-serif";
+            } else if (font === 'atma') {
+                output.style.fontFamily = "'Atma', cursive";
+            } else if (font === 'inter') {
+                output.style.fontFamily = "'Inter', sans-serif";
+            } else if (font === 'lora') {
+                output.style.fontFamily = "'Lora', serif";
+            } else if (font === 'playfair') {
+                output.style.fontFamily = "'Playfair Display', serif";
+            } else if (font === 'mono') {
+                output.style.fontFamily = "'Fira Code', monospace";
+            }
+        }
+        // Set paper page reading layout width (Narrow, Medium, Wide)
+        function setPageWidth(width) {
+            state.layoutWidth = width;
+            localStorage.setItem('cm_width', width);
+            const output = document.getElementById('rendered-output');
+            output.className = output.className.replace(/\bwidth-\S+/g, '');
+            output.classList.add(`width-${width}`);
+        }
+        // Sidebar Sliding drawer Control for all responsive layouts
+        function toggleSidebar(forceState) {
+            if (typeof forceState !== 'undefined') {
+                state.isSidebarOpen = forceState;
+            } else {
+                state.isSidebarOpen = !state.isSidebarOpen;
+            }
+            
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-overlay');
+            const desktopSidebarBtn = document.getElementById('sidebar-toggle-btn');
+            const headerMenuBtn = document.getElementById('header-menu-btn');
+            if (state.isSidebarOpen) {
+                // Open Sidebar
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden');
+                backdrop.classList.add('block');
+                
+                if (window.innerWidth >= 1024) {
+                    desktopSidebarBtn.classList.add('hidden');
+                    headerMenuBtn.classList.add('hidden');
+                }
+            } else {
+                // Close Sidebar
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('hidden');
+                backdrop.classList.remove('block');
+                
+                if (window.innerWidth >= 1024) {
+                    desktopSidebarBtn.classList.remove('hidden');
+                    headerMenuBtn.classList.remove('hidden');
+                } else {
+                    desktopSidebarBtn.classList.remove('hidden');
+                }
+            }
+        }
+        // Full Interactive Focus/Reading Mode
+        function toggleFocusMode() {
+            state.isFocusMode = !state.isFocusMode;
+            
+            const sidebar = document.getElementById('sidebar');
+            const editorPane = document.getElementById('editor-pane');
+            const previewPane = document.getElementById('preview-pane');
+            const mobileTabs = document.getElementById('mobile-tabs');
+            const exitBtn = document.getElementById('exit-focus-btn');
+            const sidebarBtn = document.getElementById('sidebar-toggle-btn');
+            if (state.isFocusMode) {
+                toggleSidebar(false); 
+                sidebarBtn.classList.add('hidden');
+                
+                editorPane.classList.add('hidden');
+                if (mobileTabs) mobileTabs.classList.add('hidden');
+                
+                previewPane.classList.remove('lg:w-1/2');
+                previewPane.classList.add('w-full');
+                
+                setPageWidth('narrow');
+                document.getElementById('width-select').value = 'narrow';
+                
+                exitBtn.classList.remove('hidden');
+                showToast("রিডিং মোড চালু হয়েছে। মনোরম পড়ার ফীল নিন!");
+            } else {
+                if (window.innerWidth >= 1024) {
+                    toggleSidebar(true);
+                } else {
+                    sidebarBtn.classList.remove('hidden');
+                    if (mobileTabs) mobileTabs.classList.remove('hidden');
+                }
+                previewPane.classList.remove('w-full');
+                previewPane.classList.add('lg:w-1/2');
+                
+                setPageWidth(state.layoutWidth);
+                document.getElementById('width-select').value = state.layoutWidth;
+                
+                exitBtn.classList.add('hidden');
+            }
+        }
+        // Insert formatting helpers inside markdown textarea
+        function insertMarkdown(type) {
+            const textarea = document.getElementById('markdown-input');
+            const startPos = textarea.selectionStart;
+            const endPos = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(startPos, endPos);
+            let replacement = "";
+            switch (type) {
+                case 'bold':
+                    replacement = `**${selectedText || 'বোল্ড লেখা'}**`;
+                    break;
+                case 'italic':
+                    replacement = `*${selectedText || 'ইটালিক লেখা'}*`;
+                    break;
+                case 'header':
+                    replacement = `\n## ${selectedText || 'নতুন হেডার'}\n`;
+                    break;
+                case 'link':
+                    replacement = `[${selectedText || 'লিংক টাইটেল'}](https://example.com)`;
+                    break;
+                case 'quote':
+                    replacement = `\n> ${selectedText || 'একটি কোট বা উদ্ধৃতি এটি।'}\n`;
+                    break;
+                case 'code':
+                    replacement = `\n\`\`\`javascript\n${selectedText || '// কোড এখানে লিখুন'}\n\`\`\`\n`;
+                    break;
+                case 'list-ul':
+                    replacement = `\n* ${selectedText || 'লিস্ট আইটেম ১'}\n* লিস্ট আইটেম ২`;
+                    break;
+                case 'table':
+                    replacement = `\n| কলাম ১ | কলাম ২ |\n| :--- | :--- |\n| ডাটা ১ | ডাটা ২ |\n`;
+                    break;
+            }
+            textarea.focus();
+            textarea.value = textarea.value.substring(0, startPos) + replacement + textarea.value.substring(endPos, textarea.value.length);
+            
+            onContentChange();
+            textarea.setSelectionRange(startPos + replacement.length, startPos + replacement.length);
+        }
+        // Smart Clear Editor with Unsaved changes tracking
+        function clearEditor() {
+            const textarea = document.getElementById('markdown-input');
+            if (textarea.value.trim() === '') {
+                showToast("এডিটর ইতিমধ্যেই খালি আছে!");
+                return;
+            }
+            if (state.isUnsaved) {
+                openCustomModal(
+                    "এডিটর খালি করার সতর্কতা!",
+                    "আপনার এডিটরে কিছু অসংরক্ষিত তথ্য রয়েছে। আপনি কি প্রথমে পরিবর্তনগুলো সেভ করতে চান নাকি সরাসরি ক্লিয়ার করতে চান?",
+                    [
+                        {
+                            text: "সেভ ও ক্লিয়ার করুন",
+                            class: "px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg",
+                            onClick: () => {
+                                manualSaveCurrentDoc();
+                                textarea.value = '';
+                                onContentChange();
+                                setUnsavedState(false);
+                                saveDocsToStorage();
+                                showToast("সংরক্ষণ করা হয়েছে এবং এডিটর খালি করা হয়েছে!");
+                            }
+                        },
+                        {
+                            text: "সরাসরি ক্লিয়ার করুন",
+                            class: "px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg",
+                            onClick: () => {
+                                textarea.value = '';
+                                onContentChange();
+                                showToast("এডিটর খালি করা হয়েছে (সংরক্ষণ করা হয়নি)");
+                            }
+                        },
+                        {
+                            text: "বাতিল",
+                            class: "px-4 py-2 text-muted bg-slate-100 dark:bg-slate-800 rounded-lg",
+                            onClick: () => {}
+                        }
+                    ]
+                );
+            } else {
+                textarea.value = '';
+                onContentChange();
+                showToast("এডিটর খালি করা হয়েছে");
+            }
+        }
+        // Copy rendered output as HTML
+        function copyOutputHTML() {
+            const outputHTML = document.getElementById('rendered-output').innerHTML;
+            
+            const el = document.createElement('textarea');
+            el.value = outputHTML;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            
+            showToast("HTML কোড ক্লিপবোর্ডে কপি করা হয়েছে!");
+        }
+        // Responsive Mobile Tab management
+        function switchMobileTab(tab) {
+            state.activeMobileTab = tab;
+            const editorPane = document.getElementById('editor-pane');
+            const previewPane = document.getElementById('preview-pane');
+            const tabEdit = document.getElementById('tab-edit');
+            const tabPreview = document.getElementById('tab-preview');
+            if (tab === 'edit') {
+                editorPane.classList.remove('hidden');
+                previewPane.classList.add('hidden');
+                
+                tabEdit.className = "flex-1 flex items-center justify-center gap-1 px-4 py-1.5 rounded-md text-xs font-semibold bg-indigo-600 text-white shadow-md";
+                tabPreview.className = "flex-1 flex items-center justify-center gap-1 px-4 py-1.5 rounded-md text-xs font-semibold text-muted hover-theme";
+            } else {
+                editorPane.classList.add('hidden');
+                previewPane.classList.remove('hidden');
+                
+                tabPreview.className = "flex-1 flex items-center justify-center gap-1 px-4 py-1.5 rounded-md text-xs font-semibold bg-indigo-600 text-white shadow-md";
+                tabEdit.className = "flex-1 flex items-center justify-center gap-1 px-4 py-1.5 rounded-md text-xs font-semibold text-muted hover-theme";
+            }
+        }
+        // Check layout widths to control responsive elements on resizing
+        function checkScreenLayout() {
+            const isMobile = window.innerWidth < 1024; // using lg as the responsive breakpoint
+            const sidebar = document.getElementById('sidebar');
+            const editorPane = document.getElementById('editor-pane');
+            const previewPane = document.getElementById('preview-pane');
+            const headerMenuBtn = document.getElementById('header-menu-btn');
+            const desktopSidebarBtn = document.getElementById('sidebar-toggle-btn');
+            const mobileTabs = document.getElementById('mobile-tabs');
+            if (!isMobile) {
+                headerMenuBtn.classList.add('hidden');
+                if (state.isSidebarOpen) {
+                    sidebar.classList.remove('-translate-x-full');
+                    desktopSidebarBtn.classList.add('hidden');
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    desktopSidebarBtn.classList.remove('hidden');
+                }
+                
+                editorPane.classList.remove('hidden');
+                previewPane.classList.remove('hidden', 'w-full');
+                previewPane.classList.add('lg:w-1/2');
+                if (mobileTabs) mobileTabs.classList.add('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full'); 
+                headerMenuBtn.classList.remove('hidden');
+                desktopSidebarBtn.classList.remove('hidden');
+                state.isSidebarOpen = false;
+                if (mobileTabs) mobileTabs.classList.remove('hidden');
+                switchMobileTab(state.activeMobileTab);
+            }
+        }
+        // HTML escaping utility helper
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+        // Elegant Toast notification displays
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = message;
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+```
