@@ -4,18 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CleanMark - Ultimate Markdown Workspace</title>
+    
     <!-- Tailwind CSS for modern and responsive styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <!-- Google Fonts for ultimate readability (Bengali & English Custom Fonts) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,700;1,400&family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Serif+Bengali:wght@300;400;700&family=Mina:wght@400;700&family=Atma:wght@400;600;700&display=swap" rel="stylesheet">
+    
     <!-- Lucide Icons for premium high-quality SVGs -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    
     <!-- MarkedJS for markdown parsing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- DOMPurify to prevent XSS -->
+    
+    <!-- DOMPurify to prevent XSS (Secure rendering) -->
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+
+    <!-- KaTeX for ultra-fast LaTeX Math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Highlight.js for beautiful Code Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/github.min.css" id="hljs-light-theme">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/github-dark.min.css" id="hljs-dark-theme" disabled>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/highlight.min.js"></script>
+
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -31,7 +47,6 @@
         }
     </script>
     <style>
-        /* CSS Theme Variables to fully fix layout breaking bugs */
         :root {
             --bg-app: #f8fafc;
             --bg-card: #ffffff;
@@ -76,7 +91,6 @@
             --bg-blockquote: #1f2937;
             --hover-item: #1f2937;
         }
-        /* Bind CSS Variables to custom Tailwind helper utilities */
         .app-bg { background-color: var(--bg-app) !important; transition: background-color 0.2s ease; }
         .card-bg { background-color: var(--bg-card) !important; transition: background-color 0.2s ease; }
         .border-theme { border-color: var(--border-color) !important; transition: border-color 0.2s ease; }
@@ -84,10 +98,11 @@
         .text-muted { color: var(--text-muted) !important; transition: color 0.2s ease; }
         .input-bg { background-color: var(--bg-input) !important; color: var(--text-main) !important; transition: all 0.2s ease; }
         .hover-theme:hover { background-color: var(--hover-item) !important; }
+
         /* Smooth custom scrollbars */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
         }
         ::-webkit-scrollbar-track {
             background: transparent;
@@ -96,7 +111,10 @@
             background: var(--border-color);
             border-radius: 9999px;
         }
-        /* Typography sizing overrides */
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
         .markdown-body {
             line-height: 1.8;
             letter-spacing: -0.009em;
@@ -122,9 +140,11 @@
         .text-size-xl h1 { font-size: 3.2rem; }
         .text-size-xl h2 { font-size: 2.6rem; }
         .text-size-xl h3 { font-size: 2.1rem; }
+
         .width-narrow { max-width: 680px; }
         .width-medium { max-width: 880px; }
         .width-wide { max-width: 100%; }
+
         .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4 {
             font-weight: 700;
             margin-top: 1.6em;
@@ -175,17 +195,117 @@
             padding: 0.2em 0.4em;
             border-radius: 0.25rem;
             font-size: 0.85em;
-            background-color: var(--bg-blockquote);
         }
+        .markdown-body p code, .markdown-body li code {
+            background-color: var(--bg-blockquote);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Task Lists Styling */
+        .markdown-body input[type="checkbox"] {
+            width: 1.15em;
+            height: 1.15em;
+            margin: 0 0.4em 0.2em -1.4em;
+            vertical-align: middle;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        /* Beautiful Math LaTeX block styles */
+        .katex-display {
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 0.75rem 0;
+            margin: 1.5em 0;
+            border-radius: 0.5rem;
+            background-color: var(--bg-blockquote);
+            border-left: 3px solid var(--accent);
+        }
+
+        /* Content Search Highlight Engine classes */
+        .content-search-highlight {
+            transition: all 0.15s ease-in-out;
+        }
+        .content-search-highlight.active-highlight {
+            background-color: #4f46e5 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.4);
+            border-color: #4f46e5 !important;
+            transform: scale(1.05);
+            display: inline-block;
+        }
+
         #preview-pane {
             -webkit-overflow-scrolling: touch;
             scroll-behavior: smooth;
         }
-        /* Print Override */
+
+        /* ================= PREMIUM PRINT LAYOUT SYSTEM ================= */
         @media print {
-            .no-print { display: none !important; }
-            .print-full { width: 100% !important; max-width: 100% !important; height: auto !important; }
-            body { background: white !important; color: black !important; }
+            /* Unlock HTML flow to print multiple pages properly */
+            html, body, #app-container, .flex-1 {
+                height: auto !important;
+                min-height: 100% !important;
+                overflow: visible !important;
+                display: block !important;
+                background: white !important;
+                color: black !important;
+            }
+
+            /* Hide everything except the rendering document preview */
+            .no-print, 
+            #sidebar, 
+            #sidebar-overlay, 
+            #sidebar-toggle-btn, 
+            header, 
+            #editor-pane, 
+            footer, 
+            #exit-focus-btn, 
+            #custom-modal, 
+            #toast {
+                display: none !important;
+            }
+
+            /* Maximize the layout area */
+            #preview-pane {
+                width: 100% !important;
+                max-width: 100% !important;
+                height: auto !important;
+                overflow: visible !important;
+                display: block !important;
+                position: relative !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            #preview-scroll-container {
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: visible !important;
+                height: auto !important;
+                display: block !important;
+            }
+
+            #rendered-output {
+                max-width: 100% !important;
+                width: 100% !important;
+                height: auto !important;
+                overflow: visible !important;
+                display: block !important;
+                background: transparent !important;
+                color: #000000 !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+            }
+
+            /* Ensure mathematical equations aren't sliced in the middle */
+            .katex-display, pre, blockquote, table, tr, img {
+                page-break-inside: avoid;
+            }
+
+            h1, h2, h3, h4, h5, h6 {
+                page-break-after: avoid;
+            }
         }
     </style>
 </head>
@@ -193,8 +313,9 @@
     <!-- Main Workspace Container -->
     <div class="flex flex-1 overflow-hidden relative h-full">
         
-        <!-- Sidebar Backdrop Overlay (Active under lg desktop breakpoint) -->
+        <!-- Sidebar Backdrop Overlay -->
         <div id="sidebar-overlay" onclick="toggleSidebar(false)" class="no-print hidden fixed inset-0 bg-black/60 z-30 transition-opacity"></div>
+        
         <!-- ================= SIDEBAR (DOCUMENT MANAGER) ================= -->
         <aside id="sidebar" class="no-print fixed lg:static inset-y-0 left-0 w-72 lg:w-64 card-bg border-r border-theme flex flex-col shrink-0 transition-transform duration-300 z-40 -translate-x-full lg:translate-x-0 shadow-2xl lg:shadow-none">
             <!-- Sidebar Header -->
@@ -205,13 +326,14 @@
                     </div>
                     <span class="font-bold text-sm tracking-tight text-main">CleanMark Docs</span>
                 </div>
-                <!-- Collapse sidebar button (visible on all screens to guarantee sliding control) -->
+                <!-- Collapse sidebar button -->
                 <button onclick="toggleSidebar(false)" class="p-1.5 rounded-lg hover-theme text-muted" title="মেনু বন্ধ করুন">
                     <i data-lucide="chevrons-left" class="w-4 h-4 lg:block hidden"></i>
                     <i data-lucide="x" class="w-4 h-4 lg:hidden block text-red-500 font-bold"></i>
                 </button>
             </div>
-            <!-- New Document & Quick Upload Block -->
+            
+            <!-- New Document & Quick Action Block -->
             <div class="p-3 space-y-2">
                 <button onclick="createNewDocument()" class="w-full flex items-center justify-center gap-2 py-2.5 px-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-md transition">
                     <i data-lucide="plus" class="w-4 h-4"></i>
@@ -227,6 +349,7 @@
                 </div>
                 <input type="file" id="file-import-input" accept=".md,.txt" class="hidden" onchange="handleFileImport(event)">
             </div>
+            
             <!-- Live Document Search Bar -->
             <div class="px-3 pb-2">
                 <div class="relative flex items-center">
@@ -234,6 +357,7 @@
                     <input type="text" id="search-input" oninput="searchDocuments(this.value)" placeholder="ডকুমেন্ট খুঁজুন..." class="w-full text-xs pl-8 pr-3 py-1.5 rounded-lg border border-theme input-bg focus:ring-1 focus:ring-indigo-500 focus:outline-none">
                 </div>
             </div>
+            
             <!-- Document List Section -->
             <div class="flex-1 overflow-y-auto px-2 pb-4">
                 <p class="text-[10px] uppercase font-bold text-muted tracking-wider px-3 mb-2">ডকুমেন্ট তালিকা</p>
@@ -241,6 +365,7 @@
                     <!-- Injected via JavaScript -->
                 </div>
             </div>
+            
             <!-- Sidebar Footer -->
             <div class="p-3 border-t border-theme text-xs">
                 <button onclick="confirmResetAll()" class="w-full text-left flex items-center gap-2 py-2 px-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition">
@@ -249,17 +374,19 @@
                 </button>
             </div>
         </aside>
-        <!-- Sidebar Floating Toggle Button for collapsed layout (Visible below lg layout) -->
+        
+        <!-- Sidebar Floating Toggle Button for collapsed layout -->
         <button id="sidebar-toggle-btn" onclick="toggleSidebar(true)" class="no-print fixed left-4 bottom-4 bg-indigo-600 text-white p-3.5 rounded-full shadow-2xl z-30 hover:bg-indigo-700 transition lg:hidden" title="মেনু খুলুন">
             <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
+        
         <!-- ================= MAIN WORKSPACE AREA ================= -->
         <div class="flex-1 flex flex-col min-w-0 overflow-hidden relative h-full">
             <!-- Top Control Bar / Toolbar -->
-            <header class="no-print border-b border-theme px-4 py-3 sticky top-0 z-20 transition-colors duration-300 card-bg flex flex-wrap items-center justify-between gap-3 shrink-0">
-                <!-- Left Title Panel -->
-                <div class="flex items-center gap-3">
-                    <!-- Hamburger button to open menu if collapsed on desktop or on mobile -->
+            <header class="no-print border-b border-theme px-4 py-2 sticky top-0 z-20 transition-colors duration-300 card-bg flex flex-wrap items-center justify-between gap-3 shrink-0">
+                
+                <!-- 1. LEFT PANEL: Standard branding & Doc title (Hidden in Focus Mode) -->
+                <div id="header-left-standard" class="flex items-center gap-3">
                     <button id="header-menu-btn" onclick="toggleSidebar(true)" class="p-1.5 rounded-lg hover-theme text-muted">
                         <i data-lucide="menu" class="w-5 h-5"></i>
                     </button>
@@ -272,76 +399,114 @@
                         </div>
                     </div>
                 </div>
-                <!-- Customization / Setting Controls -->
-                <div class="flex items-center flex-wrap gap-2 text-xs">
-                    
-                    <!-- EXPLICIT SAVE ACTION BUTTON (HIGHLY REQUESTED) -->
-                    <button id="manual-save-btn" onclick="manualSaveCurrentDoc()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-all shadow-md relative group animate-none" title="লোকাল ব্রাউজার স্টোরেজে সেভ করুন">
-                        <i data-lucide="save" class="w-4 h-4"></i>
-                        <span>সেভ করুন</span>
-                        <!-- Unsaved Glowing Indicator dot -->
-                        <span id="save-glow-dot" class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 border border-white dark:border-slate-800 rounded-full animate-ping hidden"></span>
-                    </button>
-                    <!-- Theme Selector (Perfected Layout Binding) -->
-                    <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-lg gap-0.5">
-                        <button onclick="setTheme('light')" id="theme-btn-light" class="p-1 rounded flex items-center justify-center w-6 h-6 text-muted" title="লাইট মোড">
-                            <i data-lucide="sun" class="w-4 h-4"></i>
-                        </button>
-                        <button onclick="setTheme('dark')" id="theme-btn-dark" class="p-1 rounded flex items-center justify-center w-6 h-6 text-muted" title="ডার্ক মোড">
-                            <i data-lucide="moon" class="w-4 h-4"></i>
-                        </button>
-                        <button onclick="setTheme('sepia')" id="theme-btn-sepia" class="p-1 rounded flex items-center justify-center w-6 h-6 font-extrabold" title="সেপিয়া থিম">
-                            S
-                        </button>
-                        <button onclick="setTheme('slate')" id="theme-btn-slate" class="p-1 rounded flex items-center justify-center w-6 h-6 font-bold" title="স্লেট ব্লু থিম">
-                            B
-                        </button>
-                    </div>
-                    <!-- Font Family Selector (Bengali & English) -->
-                    <select onchange="setFontFamily(this.value)" id="font-select" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg px-2 py-1.5 text-xs focus:ring-1 focus:ring-indigo-500 outline-none border-none cursor-pointer">
-                        <optgroup label="Bengali Fonts (বাংলা ফন্ট)">
-                            <option value="hind" selected>Hind Siliguri (SANS)</option>
-                            <option value="noto">Noto Serif Bengali (SERIF)</option>
-                            <option value="mina">Mina (Cursive)</option>
-                            <option value="atma">Atma (Playful)</option>
-                        </optgroup>
-                        <optgroup label="English Fonts (ইংরেজি ফন্ট)">
-                            <option value="inter">Inter (SANS)</option>
-                            <option value="lora">Lora (Classic SERIF)</option>
-                            <option value="playfair">Playfair Display (Premium SERIF)</option>
-                            <option value="mono">Fira Code (Code / Mono)</option>
-                        </optgroup>
-                    </select>
-                    <!-- Text Size Customizer (XS to XL) -->
-                    <div class="inline-flex rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5">
-                        <button onclick="setTextSize('xs')" class="size-btn px-2 py-1 rounded-md" id="size-xs">XS</button>
-                        <button onclick="setTextSize('sm')" class="size-btn px-2 py-1 rounded-md" id="size-sm">S</button>
-                        <button onclick="setTextSize('md')" class="size-btn px-2 py-1 rounded-md" id="size-md">M</button>
-                        <button onclick="setTextSize('lg')" class="size-btn px-2 py-1 rounded-md" id="size-lg">L</button>
-                        <button onclick="setTextSize('xl')" class="size-btn px-2 py-1 rounded-md" id="size-xl">XL</button>
-                    </div>
-                    <!-- Layout Width Selector -->
-                    <select onchange="setPageWidth(this.value)" id="width-select" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg px-2 py-1.5 text-xs focus:ring-1 focus:ring-indigo-500 outline-none border-none cursor-pointer">
-                        <option value="narrow">Narrow (পড়ার সেরা সাইজ)</option>
-                        <option value="medium" selected>Medium (স্বাভাবিক)</option>
-                        <option value="wide">Wide (ফুল স্ক্রিন)</option>
-                    </select>
-                    <!-- Action Controls -->
-                    <div class="flex items-center gap-1">
-                        <!-- Reading Mode Trigger -->
-                        <button id="btn-focus-mode" onclick="toggleFocusMode()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 rounded-lg transition" title="রিডিং মোড অন করুন">
-                            <i data-lucide="eye" class="w-4 h-4" id="focus-icon"></i>
-                            <span id="focus-text" class="hidden sm:inline">রিডিং মোড</span>
-                        </button>
-                        <button onclick="window.print()" class="p-1.5 text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 rounded-lg transition" title="প্রিন্ট বা PDF করুন">
-                            <i data-lucide="printer" class="w-4 h-4"></i>
-                        </button>
-                        <button onclick="copyOutputHTML()" class="p-1.5 text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 rounded-lg transition" title="রেন্ডার করা HTML কপি করুন">
-                            <i data-lucide="copy" class="w-4 h-4"></i>
-                        </button>
+
+                <!-- 2. CENTER PANEL: Document Content Word-by-Word Search Engine (ALWAYS Visible!) -->
+                <div id="header-search-container" class="flex-1 max-w-xs sm:max-w-sm md:max-w-md">
+                    <div id="content-search-bar" class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg px-2.5 py-1.5 gap-2 border border-theme w-full shadow-inner">
+                        <i data-lucide="search" class="w-3.5 h-3.5 text-muted shrink-0"></i>
+                        <input type="text" id="content-search-input" oninput="highlightContentSearch()" placeholder="লেখার ভেতর খুঁজুন..." class="bg-transparent focus:outline-none text-xs text-main w-full placeholder-slate-400 dark:placeholder-slate-500">
+                        <span id="content-search-counter" class="text-[10px] font-mono font-bold text-indigo-600 dark:text-indigo-400 px-1.5 py-0.5 shrink-0 bg-indigo-50 dark:bg-indigo-950/50 rounded-full hidden select-none">0/0</span>
+                        <div class="flex items-center border-l border-theme pl-1.5 gap-1 shrink-0">
+                            <button onclick="prevContentMatch()" class="p-1 hover-theme rounded text-muted hover:text-indigo-600 transition" title="আগের মিলটি দেখুন">
+                                <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <button onclick="nextContentMatch()" class="p-1 hover-theme rounded text-muted hover:text-indigo-600 transition" title="পরের মিলটি দেখুন">
+                                <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <!-- Responsive Tab Selection for Mobile/Tablet Layout -->
+                
+                <!-- 3. RIGHT PANEL: Options & Exit Focus (Hidden conditionally) -->
+                <div class="flex items-center gap-2">
+                    <!-- Standard Toolbar Controls (Hidden in Focus Mode) -->
+                    <div id="header-right-standard" class="flex items-center flex-wrap gap-2 text-xs">
+                        
+                        <!-- EXPLICIT SAVE ACTION BUTTON -->
+                        <button id="manual-save-btn" onclick="manualSaveCurrentDoc()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-all shadow-md relative group" title="লোকাল ব্রাউজার স্টোরেজে সেভ করুন">
+                            <i data-lucide="save" class="w-4 h-4"></i>
+                            <span>সেভ করুন</span>
+                            <span id="save-glow-dot" class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 border border-white dark:border-slate-800 rounded-full animate-ping hidden"></span>
+                        </button>
+
+                        <!-- Sync Scroll Switch -->
+                        <button id="sync-scroll-btn" onclick="toggleSyncScroll()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-theme text-slate-700 dark:text-slate-200 hover-theme transition" title="সিঙ্ক স্ক্রোল টগল করুন">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-emerald-500" id="sync-scroll-icon"></i>
+                            <span class="hidden sm:inline">সিঙ্ক স্ক্রোল</span>
+                        </button>
+
+                        <!-- Theme Selector -->
+                        <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-lg gap-0.5">
+                            <button onclick="setTheme('light')" id="theme-btn-light" class="p-1 rounded flex items-center justify-center w-6 h-6 text-muted" title="লাইট মোড">
+                                <i data-lucide="sun" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="setTheme('dark')" id="theme-btn-dark" class="p-1 rounded flex items-center justify-center w-6 h-6 text-muted" title="ডার্ক মোড">
+                                <i data-lucide="moon" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="setTheme('sepia')" id="theme-btn-sepia" class="p-1 rounded flex items-center justify-center w-6 h-6 font-extrabold" title="সেপিয়া থিম">
+                                S
+                            </button>
+                            <button onclick="setTheme('slate')" id="theme-btn-slate" class="p-1 rounded flex items-center justify-center w-6 h-6 font-bold" title="স্লেট ব্লু থিম">
+                                B
+                            </button>
+                        </div>
+
+                        <!-- Font Family Selector (Bengali & English) -->
+                        <select onchange="setFontFamily(this.value)" id="font-select" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg px-2 py-1.5 text-xs focus:ring-1 focus:ring-indigo-500 outline-none border-none cursor-pointer">
+                            <optgroup label="Bengali Fonts (বাংলা ফন্ট)">
+                                <option value="hind" selected>Hind Siliguri (SANS)</option>
+                                <option value="noto">Noto Serif Bengali (SERIF)</option>
+                                <option value="mina">Mina (Cursive)</option>
+                                <option value="atma">Atma (Playful)</option>
+                            </optgroup>
+                            <optgroup label="English Fonts (ইংরেজি ফন্ট)">
+                                <option value="inter">Inter (SANS)</option>
+                                <option value="lora">Lora (Classic SERIF)</option>
+                                <option value="playfair">Playfair Display (Premium SERIF)</option>
+                                <option value="mono">Fira Code (Code / Mono)</option>
+                            </optgroup>
+                        </select>
+
+                        <!-- Text Size Customizer -->
+                        <div class="inline-flex rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5">
+                            <button onclick="setTextSize('xs')" class="size-btn px-2 py-1 rounded-md" id="size-xs">XS</button>
+                            <button onclick="setTextSize('sm')" class="size-btn px-2 py-1 rounded-md" id="size-sm">S</button>
+                            <button onclick="setTextSize('md')" class="size-btn px-2 py-1 rounded-md" id="size-md">M</button>
+                            <button onclick="setTextSize('lg')" class="size-btn px-2 py-1 rounded-md" id="size-lg">L</button>
+                            <button onclick="setTextSize('xl')" class="size-btn px-2 py-1 rounded-md" id="size-xl">XL</button>
+                        </div>
+
+                        <!-- Layout Width Selector -->
+                        <select onchange="setPageWidth(this.value)" id="width-select" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg px-2 py-1.5 text-xs focus:ring-1 focus:ring-indigo-500 outline-none border-none cursor-pointer">
+                            <option value="narrow">Narrow (পড়ার সেরা সাইজ)</option>
+                            <option value="medium" selected>Medium (স্বাভাবিক)</option>
+                            <option value="wide">Wide (ফুল স্ক্রিন)</option>
+                        </select>
+
+                        <!-- Action Controls -->
+                        <div class="flex items-center gap-1">
+                            <!-- Reading Mode Trigger -->
+                            <button id="btn-focus-mode" onclick="toggleFocusMode()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 rounded-lg transition animate-none" title="রিডিং মোড অন করুন">
+                                <i data-lucide="eye" class="w-4 h-4" id="focus-icon"></i>
+                                <span id="focus-text" class="hidden sm:inline">রিডিং মোড</span>
+                            </button>
+                            <button onclick="window.print()" class="p-1.5 text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 rounded-lg transition" title="প্রিন্ট বা PDF করুন (সম্পূর্ণ পেজ প্রিন্ট)">
+                                <i data-lucide="printer" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="copyOutputHTML()" class="p-1.5 text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 rounded-lg transition" title="রেন্ডার করা HTML কপি করুন">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- MINIMALIST EXIT BUTTON (Only shown inside Clean Focus Mode at top right) -->
+                    <button id="header-focus-exit" onclick="toggleFocusMode()" class="hidden flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/40 rounded-lg border border-red-200 dark:border-red-900/50 shadow-sm transition" title="রিডিং মোড বন্ধ করুন">
+                        <i data-lucide="eye-off" class="w-3.5 h-3.5"></i>
+                        <span>রিডিং মোড বন্ধ করুন</span>
+                    </button>
+                </div>
+
+                <!-- Responsive Tab Selection for Mobile/Tablet Layout (Hidden in Focus Mode) -->
                 <div id="mobile-tabs" class="lg:hidden flex rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5 w-full justify-center">
                     <button onclick="switchMobileTab('edit')" id="tab-edit" class="flex-1 flex items-center justify-center gap-1 px-4 py-1.5 rounded-md text-xs font-semibold">
                         <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> এডিটর
@@ -351,6 +516,7 @@
                     </button>
                 </div>
             </header>
+
             <!-- Main Content Splits (Workspace Grid) -->
             <main class="flex-1 flex overflow-hidden min-h-0 relative h-full">
                 
@@ -380,6 +546,12 @@
                             <button onclick="insertMarkdown('list-ul')" class="p-1.5 rounded-md hover-theme text-muted" title="Bullet List">
                                 <i data-lucide="list" class="w-3.5 h-3.5"></i>
                             </button>
+                            <button onclick="insertMarkdown('list-tasks')" class="p-1.5 rounded-md hover-theme text-muted" title="Task List">
+                                <i data-lucide="check-square" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <button onclick="insertMarkdown('latex-block')" class="p-1.5 rounded-md hover-theme text-muted text-[10px] font-bold" title="LaTeX Block Formula">
+                                Math
+                            </button>
                             <button onclick="insertMarkdown('table')" class="p-1.5 rounded-md hover-theme text-muted" title="Table">
                                 <i data-lucide="table" class="w-3.5 h-3.5"></i>
                             </button>
@@ -394,6 +566,7 @@
                               placeholder="এখানে আপনার Markdown লেখাটি লিখুন বা পেস্ট (Paste) করুন..."
                               oninput="onContentChange()"></textarea>
                 </div>
+
                 <!-- RIGHT SPLIT: RENDERED PAPERS PREVIEW -->
                 <div id="preview-pane" class="w-full lg:w-1/2 flex flex-col overflow-y-auto print-full transition-all duration-300 h-full min-h-0">
                     <div class="flex-1 px-6 py-8 md:px-12 md:py-12" id="preview-scroll-container">
@@ -405,6 +578,7 @@
                     </div>
                 </div>
             </main>
+
             <!-- Stats Footer Bar -->
             <footer class="no-print border-t border-theme px-4 py-2 text-[11px] text-muted transition-colors duration-300 flex flex-wrap justify-between items-center gap-3 shrink-0">
                 <div class="flex items-center gap-4">
@@ -416,9 +590,9 @@
                         <i data-lucide="text" class="w-3.5 h-3.5 text-emerald-500"></i>
                         <span id="word-count" class="font-bold">0</span> টি শব্দ
                     </span>
-                    <span class="flex items-center gap-1" title=" reading speed ">
+                    <span class="flex items-center gap-1" title="Reading speed estimate">
                         <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-500"></i>
-                        পড়তে লাগবে ~ <span id="reading-time" class="font-bold">0</span> মিনিট
+                        পড়তে লাগবে ~ <span id="reading-time" class="font-bold">0</span> মিনিট
                     </span>
                 </div>
                 <div>
@@ -430,11 +604,7 @@
             </footer>
         </div>
     </div>
-    <!-- Floating Close Focus Button inside Reading Mode -->
-    <button id="exit-focus-btn" onclick="toggleFocusMode()" class="no-print hidden fixed bottom-6 right-6 flex items-center gap-2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-2.5 rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-all z-50 text-xs font-bold">
-        <i data-lucide="eye-off" class="w-4 h-4"></i>
-        <span>রিডিং মোড বন্ধ করুন</span>
-    </button>
+
     <!-- Custom Modal Dialog Box -->
     <div id="custom-modal" class="no-print fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
         <div class="card-bg rounded-xl p-6 max-w-sm w-full mx-4 shadow-2xl border border-theme transform scale-95 transition-all duration-300">
@@ -448,11 +618,13 @@
             </div>
         </div>
     </div>
+
     <!-- Simple Toast Notification Box -->
     <div id="toast" class="no-print fixed bottom-12 left-1/2 transform -translate-x-1/2 translate-y-20 opacity-0 bg-slate-950 text-white dark:bg-white dark:text-slate-950 text-xs font-semibold px-4 py-3 rounded-xl shadow-lg transition-all duration-300 flex items-center gap-2 z-50 border border-slate-800 dark:border-slate-200">
         <i data-lucide="check-circle" class="w-4.5 h-4.5 text-emerald-400"></i>
-        <span id="toast-message">কাজটি সফল হয়েছে!</span>
+        <span id="toast-message">কাজটি সফল হয়েছে!</span>
     </div>
+
     <script>
         // System States & Configurations
         let state = {
@@ -466,45 +638,92 @@
             isFocusMode: false,
             activeMobileTab: 'edit',
             searchQuery: '',
-            isUnsaved: false
+            isUnsaved: false,
+            syncScroll: true
         };
+
+        // Live Document Search tracking matches
+        let searchMatches = [];
+        let currentMatchIndex = -1;
+
+        // Note: Using Double Backslashes \\ to bypass JavaScript Template Literal escaping rules
         const defaultSampleMarkdown = `# 🌟 স্বাগতম CleanMark প্রো-তে!
-এটি একটি **প্রিমিয়াম মার্কডাউন রিডার ও এডিটর** যেখানে আপনি আপনার যেকোনো সাধারণ টেক্সট বা ডিরেক্ট নোট পেস্ট করে অসম্ভব সুন্দর করে সাজিয়ে পড়তে পারেন। 
-এখানে আপনি আপনার ফন্ট সাইজ ছোট-বড় করা, ফন্ট স্টাইল পরিবর্তন, কালার থিম পরিবর্তন এবং একদম পরিচ্ছন্ন ডিস্টার্বশন-ফ্রি রিডিং মোড উপভোগ করতে পারবেন।
+
+এটি একটি **প্রিমিয়াম মার্কডাউন রিডার ও এডিটর** যেখানে আপনি আপনার যেকোনো সাধারণ টেক্সট বা ডিরেক্ট নোট পেস্ট করে অসম্ভব সুন্দর করে সাজিয়ে পড়তে পারেন। 
+এখানে আপনি আপনার ফন্ট সাইজ ছোট-বড় করা, ফন্ট স্টাইল পরিবর্তন, কালার থিম পরিবর্তন এবং একদম পরিচ্ছন্ন ডিস্টার্বশন-ফ্রি রিডিং মোড উপভোগ করতে পারবেন।
+
 ---
+
 ## 🚀 চমৎকার সব ফিচারের ব্যবহার:
+
 ### ১. টেক্সট ফরম্যাটিং স্টাইল
 আপনি সহজেই আপনার টেক্সটকে করতে পারেন **বোল্ড (Bold)**, *ইটালিক (Italic)* বা ~~কেটে ফেলা লেখা~~। 
-> "একটি ভালো লেখা পড়ার অভিজ্ঞতা আপনার চিন্তাভাবনা আরও শাণিত করে। এই অ্যাপ্লিকেশনটি আপনার পড়ার আরামকে সর্বোচ্চ গুরুত্ব দেয়।" — *টিম ক্লিনমার্ক*
+
+> "একটি ভালো লেখা পড়ার অভিজ্ঞতা আপনার চিন্তাভাবনা আরও শাণিত করে। এই অ্যাপ্লিকেশনটি আপনার পড়ার আরামকে সর্বোচ্চ গুরুত্ব দেয়।" — *টিম ক্লিনমার্ক*
+
 ---
-### ২. আধুনিক ডাটা টেবিল প্রেজেন্টেশন
+
+### ২. গাণিতিক সমীকরণ ও বিজ্ঞান সূত্র (LaTeX Math Support)
+এখন আপনার এই এডিটরে সব ধরণের গাণিতিক ও বৈজ্ঞানিক সমীকরণ সরাসরি রেন্ডার হবে!
+
+**ইনলাইন গাণিতিক সমীকরণ (Inline Equation):**
+বিজ্ঞানের সবচাইতে বিখ্যাত সমীকরণটি হলো $E = mc^2$ এবং বৃত্তের ক্ষেত্রফল $A = \\pi r^2$।
+
+**জটিল ব্লক লেভেল সমীকরণ (Display / Block Equation):**
+নিচে ক্যালকুলাস এবং কোয়ান্টাম বলবিদ্যার কিছু অসাধারণ সমীকরণ উপস্থাপন করা হলো:
+
+$$f(x) = \\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}$$
+
+ম্যাক্সওয়েলের সূত্রাবলি:
+$$\\nabla \\cdot \\mathbf{E} = \\frac{\\rho}{\\varepsilon_0}$$
+$$\\nabla \\cdot \\mathbf{B} = 0$$
+
+---
+
+### ৩. আধুনিক ডাটা টেবিল প্রেজেন্টেশন
 এখানে জটিল ডাটা খুব চমৎকার ডিজাইনে দেখতে পাবেন:
 
 | ফিচারের নাম | সুবিধা | মোড সাপোর্ট |
 | :--- | :--- | :--- |
-| ডাইনামিক সাইজিং | লেখার সাইজ ছোট-বড় করার সুবিধা | লাইভ |
-| সেপিয়া রিডিং | চোখে কোনো চাপ ছাড়া দীর্ঘ সময় পড়ার ফিল | লাইট/ডার্ক/সেপিয়া |
+| ডাইনামিক সাইজিং | লেখার সাইজ ছোট-বড় করার সুবিধা | লাইভ |
+| সেপিয়া রিডিং | চোখে কোনো চাপ ছাড়া দীর্ঘ সময় পড়ার ফিল | লাইট/ডার্ক/সেপিয়া |
 | পিডিএফ প্রিন্ট | যেকোনো ডকুমেন্ট এক ক্লিকে অফলাইনে সেভ করার সুবিধা | অল ডিভাইস |
 
 ---
-### ৩. ক্লিন কোড ব্লক ও কোডিং হাইলাইটার
-আপনি যদি কোড লাভার হয়ে থাকেন, তবে কোড ব্লক দেখতে পাবেন অত্যন্ত ঝকঝকে ফন্টে:
+
+### ৪. আধুনিক কোড সিনট্যাক্স হাইলাইটার
+আপনি যদি কোড লাভার হয়ে থাকেন, তবে কোড ব্লক দেখতে পাবেন অত্যন্ত ঝকঝকে এবং রঙিন ফন্টে:
 \`\`\`javascript
 // একটি চমৎকার হ্যালো ওয়ার্ল্ড ফাংশন
 function readyToRead(user) {
-    console.log("হ্যালো " + user + ", আপনার পড়ার অভিজ্ঞতা চমৎকার হোক!");
-    return true;
+    const welcomeMsg = \`হ্যালো \${user}, আপনার পড়ার অভিজ্ঞতা চমৎকার হোক!\`;
+    console.log(welcomeMsg);
+    return {
+        success: true,
+        timestamp: Date.now()
+    };
 }
 readyToRead("জ্ঞানী পাঠক");
 \`\`\`
+
 ---
+
+### ৫. প্রফেশনাল চেকলিস্ট (Checklists)
+- [x] LaTeX গণিত সাপোর্ট ইন্টিগ্রেশন সম্পন্ন
+- [x] মাল্টি-পেজ প্রিন্ট লেআউট বাগ ফিক্সড
+- [x] Highlight.js সিনট্যাক্স হাইলাইটার যুক্তকরণ
+- [ ] ডার্ক মোডের কোড স্টাইলিং ইম্প্রুভমেন্ট
+
+---
+
 ## 🛠️ কুইক টিপস:
 * আপনার স্ক্রিনের উপরের **থিম আইকনগুলোতে** ক্লিক করে চোখের উপযোগী থিম নির্বাচন করুন।
-* লেখার ফন্ট বড়-ছোট করতে **XS, S, M, L, XL** বাটন ব্যবহার করুন।
-* ডানে-বামে উভয় প্যানেল সরাতে না চাইলে শুধু লেখাটি পড়ার জন্য উপরের **"রিডিং মোড"** অন করুন।
- his is a test line to ensure correctness.
-আপনার লেখা এখানে পেস্ট করুন এবং পড়ার আরাম উপভোগ করুন! 💖`;
-        // Load complete data from local storage on bootstrap
+* লেখার ফন্ট বড়-ছোট করতে **XS, S, M, L, XL** বাটন ব্যবহার করুন।
+* চমৎকার প্রো প্রিন্টিং অভিজ্ঞতার জন্য উপরের **প্রিন্টার আইকনে** ক্লিক করুন এবং পিডিএফ সেভ করুন।
+* দুই প্যানেল একসাথে স্ক্রল করার জন্য **সিঙ্ক স্ক্রোল** বাটনটি অন রাখুন।
+
+আপনার লেখা এখানে পেস্ট করুন এবং পড়ার আনন্দ উপভোগ করুন! 💖`;
+
         window.onload = function() {
             lucide.createIcons();
             
@@ -513,13 +732,18 @@ readyToRead("জ্ঞানী পাঠক");
                 breaks: true,
                 gfm: true
             });
+            
             // Initialize app data from localStorage
             loadStateFromStorage();
             
             // Apply layout size listeners
             checkScreenLayout();
             window.addEventListener('resize', checkScreenLayout);
+
+            // Bind Sync Scrolling
+            setupSyncScrolling();
         };
+
         // Smart dynamic sequence title generator
         function getNextDocumentTitle() {
             let index = 1;
@@ -531,12 +755,15 @@ readyToRead("জ্ঞানী পাঠক");
                 index++;
             }
         }
+
         function loadStateFromStorage() {
             // Load saved settings
             state.theme = localStorage.getItem('cm_theme') || 'light';
             state.textSize = localStorage.getItem('cm_text_size') || 'md';
             state.fontFamily = localStorage.getItem('cm_font') || 'hind';
             state.layoutWidth = localStorage.getItem('cm_width') || 'medium';
+            state.syncScroll = (localStorage.getItem('cm_sync_scroll') !== 'false');
+
             // Load Saved Docs
             const savedDocs = localStorage.getItem('cm_documents');
             if (savedDocs) {
@@ -546,6 +773,7 @@ readyToRead("জ্ঞানী পাঠক");
                     state.docs = [];
                 }
             }
+            
             // Create initial doc if list is empty
             if (state.docs.length === 0) {
                 const initDoc = {
@@ -557,6 +785,7 @@ readyToRead("জ্ঞানী পাঠক");
                 state.docs.push(initDoc);
                 localStorage.setItem('cm_documents', JSON.stringify(state.docs));
             }
+
             // Set current active document
             const savedActiveId = localStorage.getItem('cm_active_doc_id');
             const docExists = state.docs.some(d => d.id === savedActiveId);
@@ -565,25 +794,30 @@ readyToRead("জ্ঞানী পাঠক");
             } else {
                 state.activeDocId = state.docs[0].id;
             }
+
             // Apply all states dynamically
             setTheme(state.theme);
             setTextSize(state.textSize);
             setFontFamily(state.fontFamily);
             setPageWidth(state.layoutWidth);
+            updateSyncScrollUI();
+
             // Synchronize selectors
             document.getElementById('font-select').value = state.fontFamily;
             document.getElementById('width-select').value = state.layoutWidth;
+
             // Load active document content
             loadActiveDoc();
             renderDocumentList();
             setUnsavedState(false);
         }
+
         // Save State values to LocalStorage
         function saveDocsToStorage() {
             localStorage.setItem('cm_documents', JSON.stringify(state.docs));
             localStorage.setItem('cm_active_doc_id', state.activeDocId);
         }
-        // Set manual save indicators
+
         function setUnsavedState(isUnsaved) {
             state.isUnsaved = isUnsaved;
             const unsavedBadge = document.getElementById('unsaved-badge');
@@ -598,7 +832,7 @@ readyToRead("জ্ঞানী পাঠক");
                 saveBtn.classList.add('bg-amber-600', 'hover:bg-amber-700', 'ring-2', 'ring-amber-400', 'animate-pulse');
                 document.getElementById('backup-badge').innerHTML = `
                     <span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>
-                    সেভ করা হয়নি
+                    সেভ করা হয়নি
                 `;
                 document.getElementById('backup-badge').className = "bg-amber-50 text-amber-700 px-2.5 py-0.5 rounded-full dark:bg-amber-950/30 dark:text-amber-400 font-semibold flex items-center gap-1 transition-all";
             } else {
@@ -614,6 +848,7 @@ readyToRead("জ্ঞানী পাঠক");
                 document.getElementById('backup-badge').className = "bg-emerald-50 text-emerald-700 px-2.5 py-0.5 rounded-full dark:bg-emerald-950/30 dark:text-emerald-400 font-semibold flex items-center gap-1 transition-all";
             }
         }
+
         // Save Current Document manually
         function manualSaveCurrentDoc() {
             const activeDoc = state.docs.find(d => d.id === state.activeDocId);
@@ -625,22 +860,26 @@ readyToRead("জ্ঞানী পাঠক");
                 saveDocsToStorage();
                 renderDocumentList();
                 setUnsavedState(false);
-                showToast("সফলভাবে লোকাল স্টোরেজে সংরক্ষিত হয়েছে!");
+                showToast("সফলভাবে লোকাল স্টোরেজে সংরক্ষিত হয়েছে!");
             }
         }
+
         // Render Sidebar Document List Dynamically (supporting Search)
         function renderDocumentList() {
             const listContainer = document.getElementById('document-list');
             listContainer.innerHTML = '';
+            
             // Filter based on search input
             const filteredDocs = state.docs.filter(doc => 
                 doc.title.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
                 doc.content.toLowerCase().includes(state.searchQuery.toLowerCase())
             );
+            
             if (filteredDocs.length === 0) {
-                listContainer.innerHTML = `<p class="text-center text-[11px] text-muted py-4">কোনো ডকুমেন্ট পাওয়া যায়নি!</p>`;
+                listContainer.innerHTML = `<p class="text-center text-[11px] text-muted py-4">কোনো ডকুমেন্ট পাওয়া যায়নি!</p>`;
                 return;
             }
+            
             filteredDocs.forEach(doc => {
                 const isActive = doc.id === state.activeDocId;
                 const activeClasses = isActive 
@@ -663,11 +902,13 @@ readyToRead("জ্ঞানী পাঠক");
             });
             lucide.createIcons();
         }
+
         // Search engine logic
         function searchDocuments(query) {
             state.searchQuery = query;
             renderDocumentList();
         }
+
         function loadActiveDoc() {
             const activeDoc = state.docs.find(d => d.id === state.activeDocId);
             if (activeDoc) {
@@ -676,6 +917,7 @@ readyToRead("জ্ঞানী পাঠক");
                 renderMarkdown();
             }
         }
+
         // Real-time title sync with sidebar item to avoid flicker
         function updateActiveSidebarItemTitle(title) {
             const listContainer = document.getElementById('document-list');
@@ -687,13 +929,14 @@ readyToRead("জ্ঞানী পাঠক");
                 }
             }
         }
-        // Handle typing changes (Triggers "Unsaved" state with real-time automatic renaming)
+
         function onContentChange() {
             const activeDoc = state.docs.find(d => d.id === state.activeDocId);
             if (activeDoc) {
                 const textarea = document.getElementById('markdown-input');
                 activeDoc.content = textarea.value;
                 activeDoc.updatedAt = new Date().toISOString();
+                
                 // Automatically try to extract first header line to rename title if it is a default name
                 const isDefaultTitle = /^ডকুমেন্ট \d+$/.test(activeDoc.title) || 
                                        activeDoc.title === 'নতুন ডকুমেন্ট' || 
@@ -715,12 +958,13 @@ readyToRead("জ্ঞানী পাঠক");
                 renderMarkdown();
             }
         }
+
         // Create fresh new empty document
         function createNewDocument() {
             if (state.isUnsaved) {
                 openCustomModal(
                     "নতুন ফাইল তৈরি করবেন?",
-                    "আপনার বর্তমান ফাইলে কিছু পরিবর্তন করা হয়েছে যা এখনো সেভ করা হয়নি। নতুন ফাইল তৈরির আগে কি এটি সেভ করতে চান?",
+                    "আপনার বর্তমান ফাইলে কিছু পরিবর্তন করা হয়েছে যা এখনো সেভ করা হয়নি। নতুন ফাইল তৈরির আগে কি এটি সেভ করতে চান?",
                     [
                         {
                             text: "সেভ করে নতুন ফাইল খুলুন",
@@ -748,12 +992,13 @@ readyToRead("জ্ঞানী পাঠক");
             }
             executeCreation();
         }
+
         function executeCreation() {
             const nextTitle = getNextDocumentTitle();
             const newDoc = {
                 id: 'doc_' + Date.now(),
                 title: nextTitle,
-                content: `# ${nextTitle}\n\nএখানে আপনার লেখা শুরু করুন...`,
+                content: `# ${nextTitle}\n\nএখানে আপনার লেখা শুরু করুন...\n\n- [ ] কাজ ১\n- [ ] কাজ ২`,
                 updatedAt: new Date().toISOString()
             };
             state.docs.unshift(newDoc);
@@ -763,18 +1008,19 @@ readyToRead("জ্ঞানী পাঠক");
             loadActiveDoc();
             renderDocumentList();
             setUnsavedState(false);
-            showToast(`"${nextTitle}" সফলভাবে তৈরি করা হয়েছে!`);
+            showToast(`"${nextTitle}" সফলভাবে তৈরি করা হয়েছে!`);
             
-            // On mobile/tablet, automatically close drawer and switch tab
             if (window.innerWidth < 1024) {
                 toggleSidebar(false);
                 switchMobileTab('edit');
             }
         }
+
         // Import Markdown/Text Files from computer
         function triggerImport() {
             document.getElementById('file-import-input').click();
         }
+
         function handleFileImport(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -795,11 +1041,12 @@ readyToRead("জ্ঞানী পাঠক");
                 loadActiveDoc();
                 renderDocumentList();
                 setUnsavedState(false);
-                showToast("ফাইল সফলভাবে ইম্পোর্ট করা হয়েছে!");
+                showToast("ফাইল সফলভাবে ইম্পোর্ট করা হয়েছে!");
             };
             reader.readAsText(file);
             event.target.value = ''; // Reset input
         }
+
         // Export active document as `.md` file
         function exportMarkdownFile() {
             const activeDoc = state.docs.find(d => d.id === state.activeDocId);
@@ -811,14 +1058,15 @@ readyToRead("জ্ঞানী পাঠক");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            showToast("মার্কডাউন ফাইলটি ডাউনলোড করা হয়েছে!");
+            showToast("মার্কডাউন ফাইলটি ডাউনলোড করা হয়েছে!");
         }
+
         // Switch to selected document from list with robust rollback system
         function switchDocument(docId) {
             if (state.isUnsaved) {
                 openCustomModal(
-                    "অসংরক্ষিত পরিবর্তন রয়েছে!",
-                    "আপনার বর্তমান ফাইলে কিছু পরিবর্তন করা হয়েছে যা এখনো সেভ করা হয়নি। চলে যাওয়ার আগে কি সেভ করতে চান?",
+                    "অসংরক্ষিত পরিবর্তন রয়েছে!",
+                    "আপনার বর্তমান ফাইলে কিছু পরিবর্তন করা হয়েছে যা এখনো সেভ করা হয়নি। চলে যাওয়ার আগে কি সেভ করতে চান?",
                     [
                         {
                             text: "সেভ করে চলে যান",
@@ -846,8 +1094,8 @@ readyToRead("জ্ঞানী পাঠক");
             }
             executeSwitch(docId);
         }
+
         function executeSwitch(docId) {
-            // Discard unsaved changes by reloading pristine storage from LocalStorage before switching
             const savedDocs = localStorage.getItem('cm_documents');
             if (savedDocs) {
                 try {
@@ -863,12 +1111,12 @@ readyToRead("জ্ঞানী পাঠক");
             renderDocumentList();
             setUnsavedState(false);
             
-            // Close mobile/tablet drawer if open
             if (window.innerWidth < 1024) {
                 toggleSidebar(false);
             }
-            showToast("ডকুমেন্ট লোড হয়েছে");
+            showToast("ডকুমেন্ট লোড হয়েছে");
         }
+
         // Rename document title manually via Header Input
         function renameActiveDocument(newTitle) {
             const activeDoc = state.docs.find(d => d.id === state.activeDocId);
@@ -879,18 +1127,18 @@ readyToRead("জ্ঞানী পাঠক");
                 updateActiveSidebarItemTitle(activeDoc.title);
             }
         }
-        // Safely trigger document delete
+
         function confirmDeleteDoc(event, docId) {
             event.stopPropagation(); // prevent loading item
             
             if (state.docs.length <= 1) {
-                showToast("দুঃখিত, একমাত্র শেষ ডকুমেন্টটি ডিলিট করা সম্ভব নয়।");
+                showToast("দুঃখিত, একমাত্র শেষ ডকুমেন্টটি ডিলিট করা সম্ভব নয়।");
                 return;
             }
             const docToDelete = state.docs.find(d => d.id === docId);
             openCustomModal(
                 `ডকুমেন্টটি মুছবেন?`,
-                `আপনি কি নিশ্চিত যে "${docToDelete.title}" ডকুমেন্টটি ডিলিট করতে চান? এই কাজ পুনরায় ফিরিয়ে আনা সম্ভব নয়।`,
+                `আপনি কি নিশ্চিত যে "${docToDelete.title}" ডকুমেন্টটি ডিলিট করতে চান? এই কাজ পুনরায় ফিরিয়ে আনা সম্ভব নয়।`,
                 [
                     {
                         text: "ডিলিট করুন",
@@ -906,7 +1154,7 @@ readyToRead("জ্ঞানী পাঠক");
                             loadActiveDoc();
                             renderDocumentList();
                             setUnsavedState(false);
-                            showToast("ডকুমেন্টটি মুছে ফেলা হয়েছে");
+                            showToast("ডকুমেন্টটি মুছে ফেলা হয়েছে");
                         }
                     },
                     {
@@ -917,6 +1165,7 @@ readyToRead("জ্ঞানী পাঠক");
                 ]
             );
         }
+
         // Confirm system clean reset
         function confirmResetAll() {
             openCustomModal(
@@ -930,7 +1179,7 @@ readyToRead("জ্ঞানী পাঠক");
                             localStorage.clear();
                             state.docs = [];
                             loadStateFromStorage();
-                            showToast("সমস্ত মেমোরি খালি করা হয়েছে!");
+                            showToast("সমস্ত মেমোরি খালি করা হয়েছে!");
                         }
                     },
                     {
@@ -941,6 +1190,7 @@ readyToRead("জ্ঞানী পাঠক");
                 ]
             );
         }
+
         // Universal Custom Modal Builder
         function openCustomModal(title, desc, buttons) {
             const modal = document.getElementById('custom-modal');
@@ -965,23 +1215,301 @@ readyToRead("জ্ঞানী পাঠক");
             modal.querySelector('div').classList.remove('scale-95');
             modal.querySelector('div').classList.add('scale-100');
         }
+
+        // Close Custom Modal
         function closeModal() {
             const modal = document.getElementById('custom-modal');
             modal.classList.add('opacity-0', 'pointer-events-none');
             modal.querySelector('div').classList.remove('scale-100');
             modal.querySelector('div').classList.add('scale-95');
         }
-        // Render Markdown into secure beautifully compiled HTML
+
+        function toggleSyncScroll() {
+            state.syncScroll = !state.syncScroll;
+            localStorage.setItem('cm_sync_scroll', state.syncScroll);
+            updateSyncScrollUI();
+            showToast(state.syncScroll ? "সিঙ্ক স্ক্রোল চালু হয়েছে" : "সিঙ্ক স্ক্রোল বন্ধ হয়েছে");
+        }
+
+        // Sync Scroll UI indicator updates
+        function updateSyncScrollUI() {
+            const icon = document.getElementById('sync-scroll-icon');
+            const btn = document.getElementById('sync-scroll-btn');
+            if (state.syncScroll) {
+                icon.className = "w-3.5 h-3.5 text-emerald-500 animate-spin-slow";
+                btn.classList.add('bg-emerald-50', 'dark:bg-emerald-950/20');
+            } else {
+                icon.className = "w-3.5 h-3.5 text-slate-400";
+                btn.classList.remove('bg-emerald-50', 'dark:bg-emerald-950/20');
+            }
+        }
+
+        // Advanced bi-directional Scroll Linkage (Sync Scroll)
+        function setupSyncScrolling() {
+            const editor = document.getElementById('markdown-input');
+            const preview = document.getElementById('preview-pane');
+            let isScrollingEditor = false;
+            let isScrollingPreview = false;
+
+            editor.addEventListener('scroll', function() {
+                if (!state.syncScroll || isScrollingPreview) return;
+                isScrollingEditor = true;
+                const scrollPercentage = editor.scrollTop / (editor.scrollHeight - editor.clientHeight);
+                preview.scrollTop = scrollPercentage * (preview.scrollHeight - preview.clientHeight);
+                setTimeout(() => { isScrollingEditor = false; }, 50);
+            });
+
+            preview.addEventListener('scroll', function() {
+                if (!state.syncScroll || isScrollingEditor) return;
+                isScrollingPreview = true;
+                const scrollPercentage = preview.scrollTop / (preview.scrollHeight - preview.clientHeight);
+                editor.scrollTop = scrollPercentage * (editor.scrollHeight - editor.clientHeight);
+                setTimeout(() => { isScrollingPreview = false; }, 50);
+            });
+        }
+
         function renderMarkdown() {
             const markdownText = document.getElementById('markdown-input').value;
             const outputContainer = document.getElementById('rendered-output');
             
-            const rawHtml = marked.parse(markdownText);
-            const cleanHtml = DOMPurify.sanitize(rawHtml);
-            
+            // Render markdown using Marked
+            let rawHtml = '';
+            if (typeof marked !== 'undefined') {
+                rawHtml = marked.parse(markdownText);
+            } else {
+                rawHtml = markdownText.replace(/\n/g, '<br>');
+                console.warn("Marked library is not loaded yet.");
+            }
+
+            // Clean with DOMPurify
+            const cleanHtml = (typeof DOMPurify !== 'undefined') ? DOMPurify.sanitize(rawHtml) : rawHtml;
             outputContainer.innerHTML = cleanHtml;
-            updateStats(markdownText);
+            
+            // 1. Trigger syntax highlighting on elements
+            if (typeof hljs !== 'undefined') {
+                outputContainer.querySelectorAll('pre code').forEach((block) => {
+                    try {
+                        hljs.highlightElement(block);
+                    } catch (e) {
+                        console.error("Highlight.js processing error: ", e);
+                    }
+                });
+            } else {
+                console.warn("Highlight.js is not defined yet.");
+            }
+
+            // 2. Trigger auto-render KaTeX Math
+            if (typeof renderMathInElement !== 'undefined') {
+                try {
+                    renderMathInElement(outputContainer, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false},
+                            {left: '\\(', right: '\\)', display: false},
+                            {left: '\\[', right: '\\]', display: true}
+                        ],
+                        throwOnError: false
+                    });
+                } catch (err) {
+                    console.warn("KaTeX compilation warning: ", err);
+                }
+            } else {
+                console.warn("KaTeX auto-render library is not defined yet.");
+            }
+
+            // Keep HTML checkboxes interactive
+            setupCheckboxListeners();
+            
+            // Automatically run text highlights if a search term is already active
+            const query = document.getElementById('content-search-input').value.trim();
+            if (query !== '') {
+                highlightContentSearch();
+            } else {
+                updateStats(markdownText);
+            }
         }
+
+        // ================= STREAMING_CHUNK: DOCUMENT INTERIOR CONTENT SEARCH ENGINE =================
+        function highlightContentSearch() {
+            const query = document.getElementById('content-search-input').value.trim();
+            const container = document.getElementById('rendered-output');
+            
+            // Clean previous highlighting
+            clearContentHighlights(container);
+            searchMatches = [];
+            currentMatchIndex = -1;
+            updateMatchCounter();
+
+            if (!query) return;
+
+            // Deep text traversal avoiding code blocks, KaTeX math rendering tags, scripts, etc.
+            function traverseAndHighlight(node) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    const text = node.nodeValue;
+                    const regex = new RegExp(escapeRegExp(query), 'gi');
+                    let match;
+                    
+                    // Filter: Skip math, scripts, style, KaTeX containers, etc.
+                    let parent = node.parentNode;
+                    while (parent && parent !== container) {
+                        if (parent.tagName === 'SCRIPT' || 
+                            parent.tagName === 'STYLE' || 
+                            parent.classList.contains('katex') || 
+                            parent.classList.contains('katex-display') ||
+                            parent.tagName === 'TEXTAREA' ||
+                            parent.tagName === 'INPUT') {
+                            return; 
+                        }
+                        parent = parent.parentNode;
+                    }
+
+                    const matches = [];
+                    while ((match = regex.exec(text)) !== null) {
+                        matches.push(match);
+                    }
+
+                    if (matches.length > 0) {
+                        const parentNode = node.parentNode;
+                        const fragments = document.createDocumentFragment();
+                        let lastIdx = 0;
+
+                        matches.forEach((m) => {
+                            if (m.index > lastIdx) {
+                                fragments.appendChild(document.createTextNode(text.substring(lastIdx, m.index)));
+                            }
+                            
+                            // Wrapping matched term into highlighted <mark> tags
+                            const mark = document.createElement('mark');
+                            mark.className = 'content-search-highlight bg-amber-200 dark:bg-amber-600/50 text-slate-950 dark:text-slate-100 px-0.5 rounded transition-all duration-200 border border-transparent cursor-pointer';
+                            mark.innerText = m[0];
+                            fragments.appendChild(mark);
+                            searchMatches.push(mark);
+                            
+                            lastIdx = m.index + m[0].length;
+                        });
+
+                        if (lastIdx < text.length) {
+                            fragments.appendChild(document.createTextNode(text.substring(lastIdx)));
+                        }
+
+                        parentNode.replaceChild(fragments, node);
+                    }
+                } else if (node.nodeType === Node.ELEMENT_NODE && node.childNodes) {
+                    // Copy list because replacing nodes modifies child structure dynamically
+                    const children = Array.from(node.childNodes);
+                    children.forEach(traverseAndHighlight);
+                }
+            }
+
+            traverseAndHighlight(container);
+            
+            if (searchMatches.length > 0) {
+                currentMatchIndex = 0;
+                highlightActiveMatch();
+            }
+            updateMatchCounter();
+        }
+
+        // Clean up previously created <mark> highlights non-destructively
+        function clearContentHighlights(container) {
+            const highlights = container.querySelectorAll('.content-search-highlight');
+            highlights.forEach(h => {
+                const parent = h.parentNode;
+                if (parent) {
+                    parent.replaceChild(document.createTextNode(h.innerText), h);
+                }
+            });
+            container.normalize(); // Combines adjacent siblings text nodes
+        }
+
+        function highlightActiveMatch() {
+            // Restore standard inactive highlights
+            searchMatches.forEach(m => {
+                m.className = 'content-search-highlight bg-amber-200 dark:bg-amber-600/50 text-slate-950 dark:text-slate-100 px-0.5 rounded transition-all duration-200 border border-transparent';
+            });
+
+            if (currentMatchIndex >= 0 && currentMatchIndex < searchMatches.length) {
+                const activeMark = searchMatches[currentMatchIndex];
+                
+                // Active highlight: custom active-highlight styling class
+                activeMark.className = 'content-search-highlight active-highlight px-1.5 rounded text-white font-bold transition-all duration-300';
+                
+                // Scroll beautifully into focus pane viewport
+                activeMark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // Move active search cursor forwards
+        function nextContentMatch() {
+            if (searchMatches.length === 0) return;
+            currentMatchIndex = (currentMatchIndex + 1) % searchMatches.length;
+            highlightActiveMatch();
+            updateMatchCounter();
+        }
+
+        // Move active search cursor backwards
+        function prevContentMatch() {
+            if (searchMatches.length === 0) return;
+            currentMatchIndex = (currentMatchIndex - 1 + searchMatches.length) % searchMatches.length;
+            highlightActiveMatch();
+            updateMatchCounter();
+        }
+
+        // Sync match counter indicator (e.g. 1/5)
+        function updateMatchCounter() {
+            const counterEl = document.getElementById('content-search-counter');
+            if (searchMatches.length > 0) {
+                counterEl.innerText = `${currentMatchIndex + 1}/${searchMatches.length}`;
+                counterEl.classList.remove('hidden');
+            } else {
+                counterEl.innerText = '0/0';
+                counterEl.classList.add('hidden');
+            }
+        }
+
+        // Helper regex escaper
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function setupCheckboxListeners() {
+            const outputContainer = document.getElementById('rendered-output');
+            const checkboxes = outputContainer.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach((cb, index) => {
+                cb.removeAttribute('disabled'); // Allow interactive clicking
+                cb.addEventListener('change', () => {
+                    updateCheckboxInSource(index, cb.checked);
+                });
+            });
+        }
+
+        function updateCheckboxInSource(targetIndex, isChecked) {
+            const textarea = document.getElementById('markdown-input');
+            let currentContent = textarea.value;
+            
+            // Regex to match markdown checkbox list items
+            const checkboxRegex = /^\s*([-*] \[[ xX]\])/gm;
+            let match;
+            let matchCount = 0;
+            
+            while ((match = checkboxRegex.exec(currentContent)) !== null) {
+                if (matchCount === targetIndex) {
+                    const matchedStr = match[1];
+                    const startPos = match.index;
+                    const endPos = startPos + matchedStr.length;
+                    
+                    const replacement = matchedStr.includes('-') 
+                        ? `- [${isChecked ? 'x' : ' '}]`
+                        : `* [${isChecked ? 'x' : ' '}]`;
+                        
+                    textarea.value = currentContent.substring(0, startPos) + replacement + currentContent.substring(endPos);
+                    onContentChange();
+                    break;
+                }
+                matchCount++;
+            }
+        }
+
         // Count stats (Word, Char, Reading time)
         function updateStats(text) {
             const charCount = text.length;
@@ -992,38 +1520,54 @@ readyToRead("জ্ঞানী পাঠক");
             document.getElementById('word-count').innerText = wordCount.toLocaleString();
             document.getElementById('reading-time').innerText = readingTime;
         }
-        // Dynamic theme customization logic (With perfect global dark styling integration)
+
         function setTheme(theme) {
             state.theme = theme;
             localStorage.setItem('cm_theme', theme);
             const root = document.getElementById('app-container');
             const htmlTag = document.documentElement;
-            // Manage Tailwind Global Dark Mode Class
+            
+            // Manage Tailwind Global Dark Mode Class & HighlightJS dark style toggling
+            const lightHljs = document.getElementById('hljs-light-theme');
+            const darkHljs = document.getElementById('hljs-dark-theme');
+
             if (theme === 'dark' || theme === 'slate') {
                 htmlTag.classList.add('dark');
+                if (lightHljs && darkHljs) {
+                    lightHljs.disabled = true;
+                    darkHljs.disabled = false;
+                }
             } else {
                 htmlTag.classList.remove('dark');
+                if (lightHljs && darkHljs) {
+                    lightHljs.disabled = false;
+                    darkHljs.disabled = true;
+                }
             }
+            
             // Sync app custom theme configurations
             root.className = root.className.replace(/\btheme-\S+/g, '');
             root.classList.add(`theme-${theme}`);
+            
             // Clear previous active indicator
             document.querySelectorAll('[id^="theme-btn-"]').forEach(btn => {
                 btn.className = "p-1 rounded flex items-center justify-center w-6 h-6 text-muted hover-theme transition-all";
             });
+            
             // Highlight selected theme btn
             const activeBtn = document.getElementById(`theme-btn-${theme}`);
             if (activeBtn) {
                 activeBtn.className = "p-1 rounded flex items-center justify-center w-6 h-6 bg-indigo-600/20 text-indigo-600 dark:text-indigo-400 font-extrabold border border-indigo-600/30";
             }
         }
-        // Dynamic Typography Adjustments (Font Size Selector)
+
         function setTextSize(size) {
             state.textSize = size;
             localStorage.setItem('cm_text_size', size);
             const output = document.getElementById('rendered-output');
             output.className = output.className.replace(/\btext-size-\S+/g, '');
             output.classList.add(`text-size-${size}`);
+            
             document.querySelectorAll('.size-btn').forEach(btn => {
                 btn.className = "size-btn px-2 py-1 rounded-md text-muted hover-theme transition-all";
             });
@@ -1032,7 +1576,8 @@ readyToRead("জ্ঞানী পাঠক");
                 activeBtn.className = "size-btn px-2 py-1 rounded-md bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 shadow-xs font-bold";
             }
         }
-        // Apply Custom Fonts including premium Bangla Google Webfonts
+
+        // Apply Custom Fonts including premium Bengali Google Webfonts
         function setFontFamily(font) {
             state.fontFamily = font;
             localStorage.setItem('cm_font', font);
@@ -1056,6 +1601,7 @@ readyToRead("জ্ঞানী পাঠক");
                 output.style.fontFamily = "'Fira Code', monospace";
             }
         }
+
         // Set paper page reading layout width (Narrow, Medium, Wide)
         function setPageWidth(width) {
             state.layoutWidth = width;
@@ -1064,7 +1610,7 @@ readyToRead("জ্ঞানী পাঠক");
             output.className = output.className.replace(/\bwidth-\S+/g, '');
             output.classList.add(`width-${width}`);
         }
-        // Sidebar Sliding drawer Control for all responsive layouts
+
         function toggleSidebar(forceState) {
             if (typeof forceState !== 'undefined') {
                 state.isSidebarOpen = forceState;
@@ -1076,8 +1622,8 @@ readyToRead("জ্ঞানী পাঠক");
             const backdrop = document.getElementById('sidebar-overlay');
             const desktopSidebarBtn = document.getElementById('sidebar-toggle-btn');
             const headerMenuBtn = document.getElementById('header-menu-btn');
+            
             if (state.isSidebarOpen) {
-                // Open Sidebar
                 sidebar.classList.remove('-translate-x-full');
                 backdrop.classList.remove('hidden');
                 backdrop.classList.add('block');
@@ -1087,7 +1633,6 @@ readyToRead("জ্ঞানী পাঠক");
                     headerMenuBtn.classList.add('hidden');
                 }
             } else {
-                // Close Sidebar
                 sidebar.classList.add('-translate-x-full');
                 backdrop.classList.add('hidden');
                 backdrop.classList.remove('block');
@@ -1100,7 +1645,7 @@ readyToRead("জ্ঞানী পাঠক");
                 }
             }
         }
-        // Full Interactive Focus/Reading Mode
+
         function toggleFocusMode() {
             state.isFocusMode = !state.isFocusMode;
             
@@ -1108,8 +1653,15 @@ readyToRead("জ্ঞানী পাঠক");
             const editorPane = document.getElementById('editor-pane');
             const previewPane = document.getElementById('preview-pane');
             const mobileTabs = document.getElementById('mobile-tabs');
-            const exitBtn = document.getElementById('exit-focus-btn');
+            
+            // Header elements to conditional toggle
+            const leftStandard = document.getElementById('header-left-standard');
+            const rightStandard = document.getElementById('header-right-standard');
+            const focusExit = document.getElementById('header-focus-exit');
             const sidebarBtn = document.getElementById('sidebar-toggle-btn');
+            const searchContainer = document.getElementById('header-search-container');
+            const exitBtn = document.getElementById('exit-focus-btn');
+            
             if (state.isFocusMode) {
                 toggleSidebar(false); 
                 sidebarBtn.classList.add('hidden');
@@ -1120,11 +1672,21 @@ readyToRead("জ্ঞানী পাঠক");
                 previewPane.classList.remove('lg:w-1/2');
                 previewPane.classList.add('w-full');
                 
+                // Hide standard toolbar controls dynamically
+                leftStandard.classList.add('hidden');
+                rightStandard.classList.add('hidden');
+                
+                // Show exit focus option in header directly (Small & elegant)
+                focusExit.classList.remove('hidden');
+                exitBtn.classList.remove('hidden');
+                
+                // Maximize search bar visual space in Focus Mode
+                searchContainer.className = "flex-1 max-w-sm sm:max-w-md mx-auto";
+                
                 setPageWidth('narrow');
                 document.getElementById('width-select').value = 'narrow';
                 
-                exitBtn.classList.remove('hidden');
-                showToast("রিডিং মোড চালু হয়েছে। মনোরম পড়ার ফীল নিন!");
+                showToast("রিডিং মোড চালু হয়েছে। মনোরম পড়ার অভিজ্ঞতা নিন!");
             } else {
                 if (window.innerWidth >= 1024) {
                     toggleSidebar(true);
@@ -1135,13 +1697,19 @@ readyToRead("জ্ঞানী পাঠক");
                 previewPane.classList.remove('w-full');
                 previewPane.classList.add('lg:w-1/2');
                 
+                // Restore standard toolbar controls
+                leftStandard.classList.remove('hidden');
+                rightStandard.classList.remove('hidden');
+                focusExit.classList.add('hidden');
+                exitBtn.classList.add('hidden');
+                
+                searchContainer.className = "flex-1 max-w-xs sm:max-w-sm md:max-w-md";
+                
                 setPageWidth(state.layoutWidth);
                 document.getElementById('width-select').value = state.layoutWidth;
-                
-                exitBtn.classList.add('hidden');
             }
         }
-        // Insert formatting helpers inside markdown textarea
+
         function insertMarkdown(type) {
             const textarea = document.getElementById('markdown-input');
             const startPos = textarea.selectionStart;
@@ -1170,6 +1738,12 @@ readyToRead("জ্ঞানী পাঠক");
                 case 'list-ul':
                     replacement = `\n* ${selectedText || 'লিস্ট আইটেম ১'}\n* লিস্ট আইটেম ২`;
                     break;
+                case 'list-tasks':
+                    replacement = `\n- [ ] ${selectedText || 'নতুন টাস্ক বা কাজ'}\n- [ ] আরেকটি টাস্ক`;
+                    break;
+                case 'latex-block':
+                    replacement = `\n$$\n${selectedText || 'f(x) = \\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}'}\n$$\n`;
+                    break;
                 case 'table':
                     replacement = `\n| কলাম ১ | কলাম ২ |\n| :--- | :--- |\n| ডাটা ১ | ডাটা ২ |\n`;
                     break;
@@ -1180,6 +1754,7 @@ readyToRead("জ্ঞানী পাঠক");
             onContentChange();
             textarea.setSelectionRange(startPos + replacement.length, startPos + replacement.length);
         }
+
         // Smart Clear Editor with Unsaved changes tracking
         function clearEditor() {
             const textarea = document.getElementById('markdown-input');
@@ -1190,7 +1765,7 @@ readyToRead("জ্ঞানী পাঠক");
             if (state.isUnsaved) {
                 openCustomModal(
                     "এডিটর খালি করার সতর্কতা!",
-                    "আপনার এডিটরে কিছু অসংরক্ষিত তথ্য রয়েছে। আপনি কি প্রথমে পরিবর্তনগুলো সেভ করতে চান নাকি সরাসরি ক্লিয়ার করতে চান?",
+                    "আপনার এডিটরে কিছু অসংরক্ষিত তথ্য রয়েছে। আপনি কি প্রথমে পরিবর্তনগুলো সেভ করতে চান নাকি সরাসরি ক্লিয়ার করতে চান?",
                     [
                         {
                             text: "সেভ ও ক্লিয়ার করুন",
@@ -1201,7 +1776,7 @@ readyToRead("জ্ঞানী পাঠক");
                                 onContentChange();
                                 setUnsavedState(false);
                                 saveDocsToStorage();
-                                showToast("সংরক্ষণ করা হয়েছে এবং এডিটর খালি করা হয়েছে!");
+                                showToast("সংরক্ষণ করা হয়েছে এবং এডিটর খালি করা হয়েছে!");
                             }
                         },
                         {
@@ -1210,7 +1785,7 @@ readyToRead("জ্ঞানী পাঠক");
                             onClick: () => {
                                 textarea.value = '';
                                 onContentChange();
-                                showToast("এডিটর খালি করা হয়েছে (সংরক্ষণ করা হয়নি)");
+                                showToast("এডিটর খালি করা হয়েছে (সংরক্ষণ করা হয়নি)");
                             }
                         },
                         {
@@ -1223,9 +1798,10 @@ readyToRead("জ্ঞানী পাঠক");
             } else {
                 textarea.value = '';
                 onContentChange();
-                showToast("এডিটর খালি করা হয়েছে");
+                showToast("এডিটর খালি করা হয়েছে");
             }
         }
+
         // Copy rendered output as HTML
         function copyOutputHTML() {
             const outputHTML = document.getElementById('rendered-output').innerHTML;
@@ -1237,8 +1813,9 @@ readyToRead("জ্ঞানী পাঠক");
             document.execCommand('copy');
             document.body.removeChild(el);
             
-            showToast("HTML কোড ক্লিপবোর্ডে কপি করা হয়েছে!");
+            showToast("HTML কোড ক্লিপবোর্ডে কপি করা হয়েছে!");
         }
+
         // Responsive Mobile Tab management
         function switchMobileTab(tab) {
             state.activeMobileTab = tab;
@@ -1260,15 +1837,17 @@ readyToRead("জ্ঞানী পাঠক");
                 tabEdit.className = "flex-1 flex items-center justify-center gap-1 px-4 py-1.5 rounded-md text-xs font-semibold text-muted hover-theme";
             }
         }
+
         // Check layout widths to control responsive elements on resizing
         function checkScreenLayout() {
-            const isMobile = window.innerWidth < 1024; // using lg as the responsive breakpoint
+            const isMobile = window.innerWidth < 1024;
             const sidebar = document.getElementById('sidebar');
             const editorPane = document.getElementById('editor-pane');
             const previewPane = document.getElementById('preview-pane');
             const headerMenuBtn = document.getElementById('header-menu-btn');
             const desktopSidebarBtn = document.getElementById('sidebar-toggle-btn');
             const mobileTabs = document.getElementById('mobile-tabs');
+            
             if (!isMobile) {
                 headerMenuBtn.classList.add('hidden');
                 if (state.isSidebarOpen) {
@@ -1279,7 +1858,9 @@ readyToRead("জ্ঞানী পাঠক");
                     desktopSidebarBtn.classList.remove('hidden');
                 }
                 
-                editorPane.classList.remove('hidden');
+                if (!state.isFocusMode) {
+                    editorPane.classList.remove('hidden');
+                }
                 previewPane.classList.remove('hidden', 'w-full');
                 previewPane.classList.add('lg:w-1/2');
                 if (mobileTabs) mobileTabs.classList.add('hidden');
@@ -1288,10 +1869,13 @@ readyToRead("জ্ঞানী পাঠক");
                 headerMenuBtn.classList.remove('hidden');
                 desktopSidebarBtn.classList.remove('hidden');
                 state.isSidebarOpen = false;
-                if (mobileTabs) mobileTabs.classList.remove('hidden');
-                switchMobileTab(state.activeMobileTab);
+                if (mobileTabs && !state.isFocusMode) {
+                    mobileTabs.classList.remove('hidden');
+                    switchMobileTab(state.activeMobileTab);
+                }
             }
         }
+
         // HTML escaping utility helper
         function escapeHtml(text) {
             return text
@@ -1301,6 +1885,7 @@ readyToRead("জ্ঞানী পাঠক");
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
         }
+
         // Elegant Toast notification displays
         function showToast(message) {
             const toast = document.getElementById('toast');
@@ -1315,5 +1900,4 @@ readyToRead("জ্ঞানী পাঠক");
         }
     </script>
 </body>
-</html>
-```
+                        </html>
