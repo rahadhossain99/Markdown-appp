@@ -93,8 +93,28 @@
         }
 
         /* ================= DYNAMIC SYSTEM-WIDE APP INTERFACE FONT UPGRADE ================= */
-        body, button, input, select, aside, header, footer, span, p, div {
-            font-family: 'Noto Sans Bengali', 'Inter', sans-serif !important;
+        /* Standardizing fonts for system components without breaking third-party plugins */
+        body, button, input, select, aside, header, footer, p, blockquote {
+            font-family: 'Noto Sans Bengali', 'Inter', sans-serif;
+        }
+
+        /* Specific clean rule for non-KaTeX span/div components to prevent LaTeX math font breakages */
+        #app-container span:not(.katex):not(.katex *), 
+        #app-container div:not(.katex):not(.katex *):not(.katex-display) {
+            font-family: 'Noto Sans Bengali', 'Inter', sans-serif;
+        }
+
+        /* Explicit preservation of native LaTeX math styling for KaTeX components */
+        .katex, .katex *, .katex-display, .katex-display * {
+            font-family: KaTeX_Main, 'Times New Roman', serif !important;
+        }
+
+        /* Ensure rendered output text can dynamically change family, inheriting cleanly from dropdown selector */
+        #rendered-output {
+            transition: font-family 0.2s ease;
+        }
+        #rendered-output *:not(.katex):not(.katex *):not(pre):not(code) {
+            font-family: inherit;
         }
 
         /* Preserve clean monospacing for inputs/outputs representing code environments */
@@ -1661,12 +1681,12 @@ readyToRead("জ্ঞানী পাঠক");
                     // Filter: Skip math, scripts, style, KaTeX containers, etc.
                     let parent = node.parentNode;
                     while (parent && parent !== container) {
-                        if (parent.tagName === 'SCRIPT' || 
+                        if (parent.parent && (parent.tagName === 'SCRIPT' || 
                             parent.tagName === 'STYLE' || 
                             parent.classList.contains('katex') || 
                             parent.classList.contains('katex-display') ||
                             parent.tagName === 'TEXTAREA' ||
-                            parent.tagName === 'INPUT') {
+                            parent.tagName === 'INPUT')) {
                             return; 
                         }
                         parent = parent.parentNode;
@@ -2210,4 +2230,4 @@ readyToRead("জ্ঞানী পাঠক");
         }
     </script>
 </body>
-                            </html>
+</html>
